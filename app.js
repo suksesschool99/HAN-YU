@@ -21,9 +21,11 @@ let dinoMatchGame = null;
 let dinoQuiz = null;
 
 // Inisialisasi Saat Dokumen Siap
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
   initializeApp();
-});
+}
 
 function initializeApp() {
   // 1. Inisialisasi Sub-Engines

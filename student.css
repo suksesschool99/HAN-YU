@@ -1,0 +1,141 @@
+/* ==========================================================================
+   STUDENT PORTAL STYLES (student.html - RAMAH ANAK SD, FOKUS BELAJAR & AUDIO)
+   ========================================================================== */
+
+:root {
+  --student-primary: #2d6a4f;
+  --student-accent: #e76f51;
+  --student-bg: #f7faf7;
+}
+
+body.student-body {
+  background-color: var(--student-bg);
+  background-image: 
+    radial-gradient(circle at 5% 15%, rgba(82, 183, 136, 0.15) 0%, transparent 30%),
+    radial-gradient(circle at 95% 85%, rgba(244, 162, 97, 0.15) 0%, transparent 35%);
+}
+
+.student-container {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
+.student-hero-bar {
+  background: linear-gradient(135deg, white, #fefae0);
+  border: 3px solid var(--dino-gold);
+  border-radius: var(--radius-lg);
+  padding: 20px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.student-badge-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.student-dino-avatar {
+  font-size: 3.5rem;
+  background: #d8f3dc;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 3px solid #52b788;
+  animation: bounce 2s infinite ease-in-out;
+}
+
+.student-titles h1 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #143628;
+}
+
+.student-titles p {
+  font-size: 1.05rem;
+  color: var(--dino-amber);
+  font-weight: 700;
+}
+
+.student-activity-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.share-modal-box {
+  max-width: 600px;
+}
+
+.share-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0;
+  text-align: left;
+}
+
+.share-option-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.share-option-field label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--dino-forest-dark);
+}
+
+.share-option-field select {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--dino-border);
+  font-weight: 700;
+}
+
+.share-link-preview-box {
+  background: #f8fafc;
+  border: 1px solid var(--dino-border);
+  padding: 14px;
+  border-radius: var(--radius-md);
+  margin: 16px 0;
+  text-align: left;
+}
+
+.link-input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.link-input-group input {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: 1.5px solid var(--dino-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+}
+
+.copy-status {
+  font-size: 0.85rem;
+  color: #16a34a;
+  font-weight: 700;
+  display: block;
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .share-options-grid {
+    grid-template-columns: 1fr;
+  }
+}

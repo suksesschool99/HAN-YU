@@ -1,0 +1,374 @@
+/* ==========================================================================
+   STROKE ORDER ANIMATION & PRACTICE CANVAS (TEMA DINOSAURUS)
+   Mi Zi Ge (米字格) & Tian Zi Ge (田字格) Styling + Repetition Badges
+   ========================================================================== */
+
+.stroke-practice-container {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--dino-border);
+}
+
+.vocab-selector-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.vocab-tab-btn {
+  background: #f8fafc;
+  border: 2px solid var(--dino-border);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s;
+  min-width: 80px;
+}
+
+.vocab-tab-btn:hover {
+  border-color: var(--dino-mint);
+  background: #f1f5f9;
+}
+
+.vocab-tab-btn.active {
+  background: var(--dino-pale-moss);
+  border-color: var(--dino-forest-mid);
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.15);
+}
+
+.vocab-tab-btn .v-hanzi {
+  font-family: var(--font-chinese);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--dino-forest-dark);
+}
+
+.vocab-tab-btn .v-pinyin {
+  font-size: 0.82rem;
+  color: var(--dino-amber);
+  font-weight: 700;
+}
+
+/* WORKSPACE GRID: META & ORDER PANEL ↔ CANVAS */
+.stroke-workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 28px;
+  align-items: start;
+}
+
+.stroke-meta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vocab-hero-card {
+  background: linear-gradient(135deg, #ffffff, var(--dino-sand));
+  border: 2px solid var(--dino-gold);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.vocab-top-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.vocab-hanzi-large {
+  font-family: var(--font-chinese);
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--dino-forest-dark);
+  background: white;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 2px solid #cbd5e1;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.vocab-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vocab-pinyin-display {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--dino-amber);
+}
+
+.vocab-meaning-display {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.vocab-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* STROKE ORDER ANIMATION PLAYER */
+.stroke-sequence-section {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.section-sublabel {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--dino-forest-dark);
+  margin-bottom: 12px;
+}
+
+.stroke-order-pills-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+
+.stroke-order-item {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.stroke-order-item:hover {
+  border-color: var(--dino-leaf-light);
+  background: #eef9f2;
+}
+
+.stroke-order-item.active-step {
+  background: var(--dino-amber);
+  color: white;
+  border-color: #c2410c;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(231, 111, 81, 0.3);
+}
+
+.stroke-order-item .step-num {
+  background: rgba(0,0,0,0.1);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+}
+
+.stroke-order-item.active-step .step-num {
+  background: rgba(255,255,255,0.3);
+}
+
+.stroke-player-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.player-btn {
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.player-btn:hover {
+  background: #e2e8f0;
+}
+
+.player-btn.play-action {
+  background: var(--dino-forest-mid);
+  color: white;
+  border-color: var(--dino-forest-dark);
+}
+
+.player-btn.play-action:hover {
+  background: var(--dino-forest-deep);
+}
+
+/* REPETITION TARGET & BADGES */
+.repeat-target-control-box {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.repeat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--dino-forest-dark);
+  margin-bottom: 12px;
+}
+
+.repeat-header select {
+  background: var(--dino-pale-moss);
+  border: 1.5px solid var(--dino-mint);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  color: var(--dino-forest-deep);
+  cursor: pointer;
+}
+
+.repetition-badges-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.repeat-badge-box {
+  flex: 1;
+  min-width: 70px;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s;
+}
+
+.repeat-badge-box.completed {
+  background: #ecfdf5;
+  border: 2px solid #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  transform: translateY(-2px);
+}
+
+.repeat-badge-box .repeat-icon {
+  font-size: 1.3rem;
+}
+
+.repeat-badge-box .repeat-text {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.repeat-badge-box.completed .repeat-text {
+  color: #047857;
+}
+
+/* CANVAS WRAPPER */
+.stroke-canvas-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.stroke-canvas-wrapper canvas {
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.canvas-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.canvas-btn {
+  background: white;
+  border: 1.5px solid #cbd5e1;
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-family: var(--font-family);
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.canvas-btn:hover {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+}
+
+.canvas-btn.primary-action {
+  background: linear-gradient(135deg, var(--dino-leaf-light), var(--dino-jungle-green));
+  color: white;
+  border-color: var(--dino-forest-mid);
+}
+
+.canvas-btn.danger-action {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.celebration-vocab-card {
+  background: var(--dino-sand);
+  border: 2px solid var(--dino-gold);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin: 16px 0 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.celebration-vocab-card .c-hanzi {
+  font-family: var(--font-chinese);
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--dino-forest-dark);
+}
+
+.celebration-vocab-card .c-meaning {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .stroke-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}

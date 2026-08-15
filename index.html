@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan Mandarin Dinosaurus - Han Yu 1 sampai Han Yu 12 (180 Unit Lengkap)</title>
+  <meta name="description" content="Platform Pembelajaran Mandarin Lengkap Han Yu 1 - 12 untuk Anak Sekolah Dasar dengan Cerita Audio Pelan, Latihan Menulis Guratan 3-6x, Game Mencocokkan Gambar, dan Soal Latihan Pilihan Berganda Tipe YCT 2 (KKM 70).">
+  
+  <!-- Google Fonts: Fredoka, Nunito, Noto Serif SC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/stroke.css">
+  <link rel="stylesheet" href="css/yct2.css">
+</head>
+<body>
+
+  <!-- 1. TOP NAVIGATION BAR -->
+  <header class="dino-navbar">
+    <a href="index.html" class="dino-brand">
+      <span class="brand-icon">🦖</span>
+      <div class="brand-titles">
+        <h1>Petualangan Mandarin Dinosaurus</h1>
+        <p>Kurikulum Lengkap Han Yu 1 s/d Han Yu 12 • 180 Unit Pembelajaran SD</p>
+      </div>
+    </a>
+
+    <div class="navbar-right">
+      <!-- PENGATURAN KECEPATAN MEMBACA AUDIO (KHUSUS SD) -->
+      <div class="speed-control-box">
+        <span>🐢 Kecepatan Audio:</span>
+        <select id="tts-speed-selector" title="Atur kecepatan pembacaan audio khusus anak SD">
+          <option value="0.5">0.5x (Sangat Lambat - Mengeja)</option>
+          <option value="0.65" selected>0.65x (Pelan Ramah SD - Rekomendasi)</option>
+          <option value="0.85">0.85x (Sedang - Lancar)</option>
+          <option value="1.0">1.0x (Normal)</option>
+          <option value="1.2">1.2x (Cepat)</option>
+        </select>
+      </div>
+
+      <button class="dino-btn secondary small" onclick="dinoAudio.toggleMute(); this.textContent = dinoAudio.isMuted ? '🔇 Bisu' : '🔊 Suara';" title="Nyalakan/Matikan Suara">
+        🔊 Suara
+      </button>
+
+      <a href="student.html" target="_blank" class="dino-btn primary small" title="Buka Mode Tampilan Murid">
+        🎓 Mode Murid
+      </a>
+    </div>
+  </header>
+
+  <!-- 2. MAIN APPLICATION CONTAINER -->
+  <main class="app-layout">
+
+    <!-- A. PILIHAN BUKU HAN YU 1 - 12 -->
+    <section class="book-selection-section">
+      <div class="section-label">
+        <span>📚 Pilih Buku Han Yu (1 sampai 12):</span>
+      </div>
+      <div class="books-grid" id="book-selector-grid"></div>
+    </section>
+
+    <!-- B. HERO BANNER MASKOT DINOSAURUS & UNIT SAAT INI -->
+    <section class="unit-hero-banner">
+      <div class="banner-left">
+        <div class="guide-avatar-large" id="guide-avatar">🦖</div>
+        <div class="banner-titles">
+          <h2 id="current-unit-title">Han Yu 1 - 第1课 你好</h2>
+          <div class="pinyin-subtitle" id="current-unit-pinyin">Nǐ hǎo</div>
+          <div class="meaning-subtitle" id="current-unit-meaning">Arti: Halo / Salam Jumpa</div>
+          <p style="font-size: 0.85rem; color: #166534; margin-top: 4px;" id="guide-desc">Mari pelajari materi Mandarin bersama Rexy!</p>
+        </div>
+      </div>
+
+      <div class="banner-right-actions">
+        <button class="dino-btn primary small" onclick="openShareModalForCurrent()">
+          📤 Bagikan ke Murid
+        </button>
+      </div>
+    </section>
+
+    <!-- C. UNIT SELECTOR CAROUSEL (15 UNIT PER BUKU) -->
+    <section class="unit-carousel-container">
+      <div class="section-label" style="font-size: 0.95rem; margin-bottom: 8px;">
+        <span>🎯 Pilih Unit Pembelajaran (15 Unit per Buku):</span>
+      </div>
+      <div class="unit-pills-scroll" id="unit-selector-list"></div>
+    </section>
+
+    <!-- D. TAB AKTIVITAS PEMBELAJARAN INTERAKTIF -->
+    <nav class="dino-tabs-nav">
+      <button class="dino-tab-item active" data-tab="story">
+        📖 1. Cara Baca Cerita (Audio Pelan SD)
+      </button>
+      <button class="dino-tab-item" data-tab="strokes">
+        ✍️ 2. Contoh & Latihan Guratan (3-6x)
+      </button>
+      <button class="dino-tab-item" data-tab="matching">
+        🧩 3. Game Mencocokkan Gambar & Kalimat
+      </button>
+      <button class="dino-tab-item" data-tab="quiz">
+        📝 4. Soal Latihan YCT 2 (Audio & KKM 70)
+      </button>
+    </nav>
+
+    <!-- E. PANEL KONTEN SETIAP TAB -->
+
+    <!-- TAB 1: CERITA & AUDIO MEMBACA LENGKAP -->
+    <section class="activity-panel active" id="tab-panel-story">
+      <div id="story-content-container"></div>
+    </section>
+
+    <!-- TAB 2: CONTOH GURATAN & KANVAS LATIHAN MENULIS (3-6X) -->
+    <section class="activity-panel" id="tab-panel-strokes">
+      <div class="stroke-practice-container">
+        <div class="section-label">
+          <span>✍️ Pilih Kosakata Guratan Unit Ini:</span>
+        </div>
+        <div class="vocab-selector-tabs" id="vocab-stroke-selector"></div>
+
+        <div class="stroke-workspace-grid">
+          <div class="stroke-meta-panel" id="stroke-meta-display"></div>
+
+          <div class="stroke-canvas-wrapper">
+            <div id="stroke-demo-indicator" style="font-weight: 800; font-size: 0.9rem; color: var(--dino-forest-dark); text-align: center;">
+              💡 Tuliskan karakter pada kotak Mi Zi Ge di bawah ini:
+            </div>
+            <canvas id="stroke-canvas"></canvas>
+
+            <div class="canvas-toolbar">
+              <button class="canvas-btn primary-action" onclick="dinoWriter.checkPractice(false)">
+                Periksa Tulisan 🦖
+              </button>
+              <button class="canvas-btn" onclick="dinoWriter.toggleDemoPlay()">
+                Contoh Guratan 🎬
+              </button>
+              <button class="canvas-btn" onclick="dinoWriter.undoStroke()">
+                Batal ↺
+              </button>
+              <button class="canvas-btn danger-action" onclick="dinoWriter.clearCanvas()">
+                Hapus 🧹
+              </button>
+              <button class="canvas-btn" onclick="dinoWriter.toggleOutline()">
+                Panduan Bayangan 👁️
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="stroke-celebration-modal" class="win-modal hidden"></div>
+    </section>
+
+    <!-- TAB 3: GAME MENCOCOKKAN GAMBAR DENGAN KALIMAT -->
+    <section class="activity-panel" id="tab-panel-matching">
+      <div id="matching-container"></div>
+    </section>
+
+    <!-- TAB 4: SOAL LATIHAN PILIHAN BERGANDA TIPE YCT 2 -->
+    <section class="activity-panel" id="tab-panel-quiz">
+      <div id="quiz-container"></div>
+    </section>
+
+  </main>
+
+  <!-- JAVASCRIPT MODULES -->
+  <script src="js/audio-engine.js"></script>
+  <script src="js/data-curriculum.js"></script>
+  <script src="js/stroke-writer.js"></script>
+  <script src="js/matching-game.js"></script>
+  <script src="js/quiz-yct2.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

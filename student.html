@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Murid - Petualangan Mandarin Dinosaurus (Han Yu 1 - 12)</title>
+  <meta name="description" content="Halaman Belajar Mandiri Khusus Murid SD: Cerita Audio Lambat, Latihan Menulis Guratan 3-6x, Game Cocok Gambar, dan Soal Kuis YCT 2 KKM 70.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/stroke.css">
+  <link rel="stylesheet" href="css/yct2.css">
+  <link rel="stylesheet" href="css/student.css">
+</head>
+<body>
+
+  <!-- NAVBAR KHUSUS MURID -->
+  <header class="dino-navbar">
+    <a href="student.html" class="dino-brand">
+      <span class="brand-icon">🦕</span>
+      <div class="brand-titles">
+        <h1>Ruang Belajar Mandiri Murid SD</h1>
+        <p>Petualangan Mandarin Dinosaurus • Han Yu 1 sampai Han Yu 12</p>
+      </div>
+    </a>
+
+    <div class="navbar-right">
+      <div class="speed-control-box">
+        <span>🐢 Kecepatan Audio:</span>
+        <select id="tts-speed-selector" title="Atur kecepatan audio bacaan khusus anak SD">
+          <option value="0.5">0.5x (Sangat Pelan)</option>
+          <option value="0.65" selected>0.65x (Pelan Ramah SD)</option>
+          <option value="0.85">0.85x (Sedang)</option>
+          <option value="1.0">1.0x (Normal)</option>
+        </select>
+      </div>
+
+      <a href="index.html" class="dino-btn secondary small">
+        🏫 Mode Utama Guru
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="app-layout">
+
+    <!-- PILIHAN BUKU & UNIT -->
+    <section class="book-selection-section">
+      <div class="section-label">
+        <span>📚 Pilih Buku Pelajaran:</span>
+      </div>
+      <div class="books-grid" id="book-selector-grid"></div>
+    </section>
+
+    <!-- HERO BANNER UNIT -->
+    <section class="unit-hero-banner">
+      <div class="banner-left">
+        <div class="guide-avatar-large" id="guide-avatar">🦖</div>
+        <div class="banner-titles">
+          <h2 id="current-unit-title">Han Yu 1 - 第1课 你好</h2>
+          <div class="pinyin-subtitle" id="current-unit-pinyin">Nǐ hǎo</div>
+          <div class="meaning-subtitle" id="current-unit-meaning">Arti: Halo / Salam Jumpa</div>
+          <p style="font-size: 0.85rem; color: #166534; margin-top: 4px;" id="guide-desc">Mari belajar membaca, menulis guratan, bermain game, dan latihan soal YCT 2!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- UNIT CAROUSEL -->
+    <section class="unit-carousel-container">
+      <div class="section-label" style="font-size: 0.95rem; margin-bottom: 8px;">
+        <span>🎯 Pilih Unit Pembelajaran:</span>
+      </div>
+      <div class="unit-pills-scroll" id="unit-selector-list"></div>
+    </section>
+
+    <!-- TABS AKTIVITAS MURID -->
+    <nav class="dino-tabs-nav">
+      <button class="dino-tab-item active" data-tab="story">
+        📖 1. Baca Cerita (Audio Pelan)
+      </button>
+      <button class="dino-tab-item" data-tab="strokes">
+        ✍️ 2. Latihan Guratan (3-6x)
+      </button>
+      <button class="dino-tab-item" data-tab="matching">
+        🧩 3. Game Cocok Gambar
+      </button>
+      <button class="dino-tab-item" data-tab="quiz">
+        📝 4. Latihan Soal YCT 2
+      </button>
+    </nav>
+
+    <!-- PANELS -->
+    <section class="activity-panel active" id="tab-panel-story">
+      <div id="story-content-container"></div>
+    </section>
+
+    <section class="activity-panel" id="tab-panel-strokes">
+      <div class="stroke-practice-container">
+        <div class="section-label">
+          <span>✍️ Pilih Kosakata Guratan:</span>
+        </div>
+        <div class="vocab-selector-tabs" id="vocab-stroke-selector"></div>
+
+        <div class="stroke-workspace-grid">
+          <div class="stroke-meta-panel" id="stroke-meta-display"></div>
+
+          <div class="stroke-canvas-wrapper">
+            <div id="stroke-demo-indicator" style="font-weight: 800; font-size: 0.9rem; color: var(--dino-forest-dark); text-align: center;">
+              💡 Tuliskan karakter di kotak Mi Zi Ge di bawah ini:
+            </div>
+            <canvas id="stroke-canvas"></canvas>
+
+            <div class="canvas-toolbar">
+              <button class="canvas-btn primary-action" onclick="dinoWriter.checkPractice(false)">
+                Periksa Tulisan 🦖
+              </button>
+              <button class="canvas-btn" onclick="dinoWriter.toggleDemoPlay()">
+                Contoh Guratan 🎬
+              </button>
+              <button class="canvas-btn" onclick="dinoWriter.undoStroke()">
+                Batal ↺
+              </button>
+              <button class="canvas-btn danger-action" onclick="dinoWriter.clearCanvas()">
+                Hapus 🧹
+              </button>
+              <button class="canvas-btn" onclick="dinoWriter.toggleOutline()">
+                Panduan Bayangan 👁️
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="stroke-celebration-modal" class="win-modal hidden"></div>
+    </section>
+
+    <section class="activity-panel" id="tab-panel-matching">
+      <div id="matching-container"></div>
+    </section>
+
+    <section class="activity-panel" id="tab-panel-quiz">
+      <div id="quiz-container"></div>
+    </section>
+
+  </main>
+
+  <!-- JAVASCRIPT MODULES -->
+  <script src="js/audio-engine.js"></script>
+  <script src="js/data-curriculum.js"></script>
+  <script src="js/stroke-writer.js"></script>
+  <script src="js/matching-game.js"></script>
+  <script src="js/quiz-yct2.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Petualangan Mandarin Dinosaurus - Han Yu 1 s/d 6 (汉语 1-6)</title>
-  <meta name="description" content="Website Pembelajaran Mandiri Bahasa Mandarin Han Yu 1 sampai Han Yu 6 Terlengkap Bertema Dinosaurus. Cara baca cerita, pinyin, arti, cara menulis guratan, game tebak kuis, dan mencocokkan gambar." />
+  <title>Petualangan Han Yu 汉语 1-6 • Buku Pelajaran Digital Interaktif</title>
+  <meta name="description" content="Website Pembelajaran Mandiri Bahasa Mandarin Han Yu 1 sampai Han Yu 6 Terlengkap 100% Sesuai Buku Asli. Ilustrasi asli, audio suara, pinyin ruby, guratan tianzige, dan game edukasi dinosaurus." />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦖</text></svg>">
 </head>
@@ -21,7 +21,7 @@
         <span class="brand-dino-icon">🦖</span>
         <div>
           <h1 class="brand-title">Petualangan Han Yu 汉语</h1>
-          <p class="brand-subtitle">Belajar Mandarin Menyenangkan • Han Yu 1 sampai Han Yu 6</p>
+          <p class="brand-subtitle">Buku Teks Resmi Han Yu 1 s/d 6 • Beijing Chinese Language College</p>
         </div>
       </div>
 
@@ -34,45 +34,49 @@
         </div>
 
         <!-- Stroke Reference Modal Trigger -->
-        <button class="btn-hatchery-trigger btn-stroke-ref" id="btn-open-stroke-ref" title="Lihat Tabel 28 Guratan & 7 Aturan Urutan Hanzi Resmi">
-          <span>📜</span> Tabel Guratan Resmi
+        <button class="btn-nav-action btn-stroke-ref" id="btn-open-stroke-ref" title="Lihat Tabel 28 Guratan & 7 Aturan Urutan Hanzi Resmi">
+          <span>📜</span> Tabel 28 Guratan
         </button>
 
         <!-- Incubator Modal Trigger -->
-        <button class="btn-hatchery-trigger" id="btn-open-hatchery">
-          <span>🥚</span> Sarang Telur Dino
+        <button class="btn-nav-action btn-hatchery" id="btn-open-hatchery" title="Buka Sarang Telur Dinosaurus">
+          <span>🥚</span> Sarang Dino
           <span class="hatchery-badge-count" id="hatchery-badge" style="display: none;">!</span>
         </button>
       </div>
     </header>
 
-    <!-- 2. PILIHAN BUKU (HAN YU 1 - 6) -->
-    <section class="book-bar-card">
-      <div class="bar-header-label">
-        <span>📚</span> Pilih Buku Pelajaran Mandarin
-      </div>
-      <div class="book-scroll-grid" id="book-selector-container">
+    <!-- 2. COMPACT DUAL SELECTOR BAR (BUKU & PELAJARAN) -->
+    <section class="control-navigator-bar">
+      <!-- Pilihan Buku (Chips Horizontal Kompak) -->
+      <div class="books-quick-row" id="book-selector-container">
         <!-- Diisi otomatis oleh JavaScript -->
+      </div>
+
+      <!-- Quick Lesson Picker & Quick Nav -->
+      <div class="lesson-picker-bar">
+        <div class="lesson-dropdown-wrapper">
+          <label for="lesson-select-dropdown">📖 Pilih Pelajaran (15 Bab):</label>
+          <select id="lesson-select-dropdown" class="lesson-select-dropdown">
+            <!-- Diisi otomatis oleh JavaScript -->
+          </select>
+        </div>
+
+        <div class="lesson-nav-buttons">
+          <button class="btn-step-nav" id="btn-prev-lesson" title="Pelajaran Sebelumnya">◀ Bab Sebelumnya</button>
+          <span class="current-lesson-indicator" id="current-lesson-indicator">Bab 1 / 15</span>
+          <button class="btn-step-nav" id="btn-next-lesson" title="Pelajaran Berikutnya">Bab Berikutnya ▶</button>
+        </div>
       </div>
     </section>
 
-    <!-- 3. PILIHAN UNIT (UNIT 1 - 12) -->
-    <section class="book-bar-card">
-      <div class="bar-header-label">
-        <span>🧭</span> Pilih Bab / Unit Pelajaran
-      </div>
-      <div class="unit-scroll-row" id="unit-selector-container">
-        <!-- Diisi otomatis oleh JavaScript -->
-      </div>
-    </section>
-
-    <!-- 4. HERO BANNER UNIT AKTIF -->
+    <!-- 3. HERO BANNER UNIT AKTIF -->
     <section class="unit-hero-banner">
       <div class="unit-banner-left">
-        <h2 id="unit-header-title">第一课：一二三四五</h2>
-        <div class="unit-banner-pinyin" id="unit-header-pinyin">Dì yī kè: Yī èr sān sì wǔ</div>
-        <div class="unit-banner-meaning" id="unit-header-meaning">Pelajaran 1: Satu Dua Tiga Empat Lima</div>
-        <div class="unit-banner-intro" id="unit-header-intro">Ayo belajar mengenal dan menghitung angka 1 sampai 5!</div>
+        <div class="unit-badge-pill" id="unit-group-pill">第一单元 (Unit 1)</div>
+        <h2 id="unit-header-title">第一课：你好</h2>
+        <div class="unit-banner-pinyin" id="unit-header-pinyin">Dì yī kè: Nǐ hǎo</div>
+        <div class="unit-banner-meaning" id="unit-header-meaning">Pelajaran 1: Halo / Apa Kabar</div>
       </div>
       <div class="dino-guide-card">
         <div class="guide-avatar" id="dino-guide-avatar">🦖</div>
@@ -83,149 +87,186 @@
       </div>
     </section>
 
-    <!-- 5. TABS 4 FITUR UTAMA PEMBELAJARAN -->
+    <!-- 4. TABS 4 FITUR UTAMA PEMBELAJARAN -->
     <nav class="tabs-navigation">
       <button class="tab-btn active" data-tab="story">
         <span class="tab-icon">📖</span>
-        <span>1. Baca Cerita & Kalimat</span>
+        <span>1. Buku Asli & Cerita</span>
+      </button>
+      <button class="tab-btn" data-tab="vocab">
+        <span class="tab-icon">📝</span>
+        <span>2. Kosakata Buku (记生词)</span>
       </button>
       <button class="tab-btn" data-tab="stroke">
         <span class="tab-icon">✍️</span>
-        <span>2. Belajar & Game Guratan</span>
+        <span>3. Tulis Guratan (写汉字)</span>
       </button>
       <button class="tab-btn" data-tab="quiz">
         <span class="tab-icon">🎮</span>
-        <span>3. Game Tebak Arti & Pinyin</span>
+        <span>4. Game Kuis Arti & Pinyin</span>
       </button>
       <button class="tab-btn" data-tab="match">
         <span class="tab-icon">🧩</span>
-        <span>4. Cocokkan Gambar-Kalimat</span>
+        <span>5. Cocokkan Gambar & Teks</span>
       </button>
     </nav>
 
     <!-- ==========================================
-         TAB 1: CARA BACA CERITA & KALIMAT
+         TAB 1: BUKU ASLI & CERITA INTERAKTIF
          ========================================== -->
     <div class="tab-pane active" id="tab-pane-story">
-      <div class="story-panel">
+      <div class="textbook-interactive-container">
         
-        <!-- Control Bar -->
-        <div class="story-control-bar">
-          <div class="control-group">
-            <button class="btn-dino-action" id="btn-play-all-story">
-              <span>▶️</span> Putar Seluruh Cerita
-            </button>
-            <div class="speed-control">
-              <span>🐢 Kecepatan:</span>
-              <input type="range" id="tts-speed-slider" min="0.6" max="1.3" step="0.05" value="0.9" />
-              <span id="tts-speed-label">0.90x</span> <span>🦖</span>
+        <!-- Kolom Kiri: Halaman Ilustrasi Buku Asli -->
+        <div class="textbook-page-viewer-column">
+          <div class="viewer-header">
+            <span>🖼️ Halaman Buku Pelajaran Asli</span>
+            <div class="viewer-page-pills" id="textbook-page-pills">
+              <!-- Tombol Pilih Halaman Buku -->
+            </div>
+          </div>
+          <div class="textbook-image-display" id="textbook-image-display">
+            <img id="main-textbook-page-img" src="assets/pdf_pages_hanyu1/page_06.png" alt="Halaman Buku Asli" />
+            <div class="page-zoom-hint">🔍 Klik gambar untuk membuka ukuran penuh</div>
+          </div>
+        </div>
+
+        <!-- Kolom Kanan: Teks Kalimat & Dialog Interaktif -->
+        <div class="textbook-story-column">
+          <!-- Control Bar -->
+          <div class="story-control-bar">
+            <div class="control-group">
+              <button class="btn-dino-action" id="btn-play-all-story">
+                <span>▶️</span> Putar Seluruh Cerita
+              </button>
+              <div class="speed-control">
+                <span>🐢 Kecepatan:</span>
+                <input type="range" id="tts-speed-slider" min="0.6" max="1.3" step="0.05" value="0.9" />
+                <span id="tts-speed-label">0.90x</span> <span>🦖</span>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="toggle-label">
+                <input type="checkbox" id="toggle-pinyin" checked />
+                <span>Pinyin</span>
+              </label>
+              <label class="toggle-label">
+                <input type="checkbox" id="toggle-meaning" checked />
+                <span>Arti</span>
+              </label>
             </div>
           </div>
 
-          <div class="control-group">
-            <label class="toggle-label">
-              <input type="checkbox" id="toggle-pinyin" checked />
-              <span>Tampilkan Pinyin</span>
-            </label>
-            <label class="toggle-label">
-              <input type="checkbox" id="toggle-meaning" checked />
-              <span>Tampilkan Terjemahan</span>
-            </label>
+          <!-- Story Sentences Stream -->
+          <div class="story-cards-stream" id="story-sentences-list">
+            <!-- Diisi otomatis oleh JavaScript -->
           </div>
-        </div>
-
-        <!-- Story Sentences Stream -->
-        <div class="story-cards-stream" id="story-sentences-list">
-          <!-- Diisi otomatis oleh JavaScript -->
-        </div>
-
-        <!-- Original Textbook Illustration Gallery -->
-        <div class="story-page-gallery" id="story-page-gallery">
-          <!-- Diisi otomatis oleh JavaScript -->
         </div>
 
       </div>
     </div>
 
     <!-- ==========================================
-         TAB 2: CARA MENULIS & GAME GURATAN
+         TAB 2: KOSAKATA BUKU (记生词)
+         ========================================== -->
+    <div class="tab-pane" id="tab-pane-vocab">
+      <div class="vocab-panel">
+        <div class="vocab-header-banner">
+          <h3>📝 生词表 (Daftar Kosakata Baru Pelajaran Ini)</h3>
+          <p>Klik kartu kata untuk mendengarkan pelafalan audio bahasa Mandarin standar.</p>
+        </div>
+        <div class="vocab-cards-grid" id="vocab-cards-list">
+          <!-- Diisi otomatis oleh JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         TAB 3: TULIS GURATAN (写汉字 & 田字格)
          ========================================== -->
     <div class="tab-pane" id="tab-pane-stroke">
       <div class="stroke-panel">
         
-        <!-- Vocab Selector Chips -->
-        <div class="bar-header-label">
-          <span>🔤</span> Pilih Karakter Hanzi untuk Dipelajari Goresannya:
-        </div>
-        <div class="stroke-vocab-bar" id="stroke-vocab-chips">
-          <!-- Diisi otomatis oleh JavaScript -->
+        <!-- Karakter Selector Chips -->
+        <div class="stroke-vocab-bar">
+          <span class="bar-label">Pilih Karakter untuk Dilatih:</span>
+          <div class="stroke-chips-scroll" id="stroke-vocab-chips">
+            <!-- Diisi otomatis oleh JavaScript -->
+          </div>
         </div>
 
+        <!-- Workbench Latihan Menulis Tianzige -->
         <div class="stroke-workbench">
-          <!-- Tianzige Canvas Workspace -->
-          <div class="canvas-wrapper-box">
-            <canvas id="tianzige-canvas" class="tianzige-canvas" width="320" height="320"></canvas>
-            
-            <div class="canvas-toolbar">
-              <button class="btn-tool primary" id="btn-animate-stroke">
-                <span>🎬</span> Animasi Urutan Guratan
-              </button>
-              <button class="btn-tool" id="btn-clear-stroke">
-                <span>🧹</span> Bersihkan Canvas
-              </button>
+          
+          <!-- Canvas Area -->
+          <div class="canvas-card">
+            <div class="canvas-header">
+              <span class="canvas-title">Grid Tianzige (田字格) Interaktif</span>
+              <div class="canvas-actions">
+                <button class="btn-canvas-action" id="btn-animate-stroke" title="Tonton Animasi Urutan Guratan">
+                  ▶️ Animasi
+                </button>
+                <button class="btn-canvas-action" id="btn-clear-stroke" title="Bersihkan Goresanmu">
+                  🧹 Hapus
+                </button>
+              </div>
             </div>
 
-            <div class="stroke-msg info" id="stroke-feedback-msg">
-              💡 Ikuti jejak bayangan huruf di dalam grid Tianzige dengan mouse / sentuhan jarimu!
+            <div class="canvas-wrapper">
+              <canvas id="tianzige-canvas" width="360" height="360"></canvas>
+            </div>
+
+            <div class="stroke-feedback-bar">
+              <span id="stroke-feedback-msg" class="stroke-msg info">
+                💡 Ikuti bayangan huruf di dalam grid dengan mouse atau jarimu!
+              </span>
             </div>
           </div>
 
-          <!-- Stroke Details Information -->
+          <!-- Info & Detail Guratan -->
           <div class="stroke-info-card">
-            <div class="stroke-char-header">
-              <div class="big-hanzi-badge" id="stroke-detail-hanzi">一</div>
-              <div class="char-meta">
-                <h3 id="stroke-detail-pinyin">yī</h3>
-                <div class="char-meaning" id="stroke-detail-meaning">Satu</div>
-                <button class="btn-audio-mini" id="btn-stroke-audio">🔊 Dengarkan Suara</button>
+            <div class="stroke-main-hanzi-box">
+              <span class="main-hanzi" id="stroke-detail-hanzi">你</span>
+              <button class="btn-audio-speak" id="btn-stroke-audio" title="Dengarkan Suara">🔊</button>
+            </div>
+            
+            <div class="stroke-meta-info">
+              <div class="meta-row">
+                <span class="meta-label">Pinyin:</span>
+                <span class="meta-val pinyin" id="stroke-detail-pinyin">nǐ</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Arti:</span>
+                <span class="meta-val" id="stroke-detail-meaning">kamu</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Jumlah Guratan:</span>
+                <span class="meta-val badge" id="stroke-detail-count">7 Guratan</span>
               </div>
             </div>
 
-            <div class="detail-row">
-              <label>Jumlah Guratan (Total Strokes):</label>
-              <span id="stroke-detail-count">1 Guratan</span>
-            </div>
-
-            <div class="detail-row">
-              <label>Nama-Nama Guratan Berurutan:</label>
+            <!-- Urutan Guratan per Langkah -->
+            <div class="stroke-steps-box">
+              <h4>Nama Urutan Guratan:</h4>
               <div class="stroke-steps-list" id="stroke-detail-names">
-                <!-- Diisi otomatis -->
+                <!-- Diisi otomatis oleh JavaScript -->
               </div>
             </div>
 
-            <div class="detail-row">
-              <label>Petunjuk & Aturan Penulisan:</label>
-              <p id="stroke-detail-guide" style="font-size: 0.9rem; color: #475569; line-height: 1.4;">Goresan garis mendatar dari kiri ke kanan.</p>
+            <div class="stroke-guide-box">
+              <h4>Panduan Menulis:</h4>
+              <p id="stroke-detail-guide">Tulis radikal orang 亻 di sebelah kiri terlebih dahulu, kemudian bagian kanan.</p>
             </div>
-
-            <!-- Prehistoric Rules Guide -->
-            <div style="margin-top: 18px; padding-top: 14px; border-top: 2px dashed #cbd5e1;">
-              <label style="font-size: 0.8rem; font-weight: 700; color: #047857; text-transform: uppercase;">🦖 Aturan Emas Guratan Mandarin:</label>
-              <ul style="font-size: 0.8rem; color: #64748b; margin-left: 18px; margin-top: 6px; line-height: 1.4;">
-                <li>先横后竖 (Mendatar dulu baru tegak)</li>
-                <li>先撇后捺 (Miring kiri dulu baru miring kanan)</li>
-                <li>从上到下 (Dari atas ke bawah) & 从左到右 (Dari kiri ke kanan)</li>
-              </ul>
-            </div>
-
           </div>
+
         </div>
 
       </div>
     </div>
 
     <!-- ==========================================
-         TAB 3: GAME MENEBAK ARTI & PINYIN
+         TAB 4: GAME MENEBAK ARTI & PINYIN (QUIZ)
          ========================================== -->
     <div class="tab-pane" id="tab-pane-quiz">
       <div class="quiz-panel">
@@ -236,12 +277,13 @@
     </div>
 
     <!-- ==========================================
-         TAB 4: GAME MENCOCOKKAN GAMBAR & KALIMAT
+         TAB 5: GAME MENCOCOKKAN GAMBAR & KALIMAT
          ========================================== -->
     <div class="tab-pane" id="tab-pane-match">
       <div class="matching-panel">
-        <div class="bar-header-label" style="margin-bottom: 16px;">
-          <span>🎯</span> Klik 1 Kartu Gambar di Kiri dan 1 Kartu Kalimat di Kanan untuk Mencocokkan!
+        <div class="matching-header">
+          <h3>🧩 Permainan Mencocokkan Ilustrasi Buku & Kalimat</h3>
+          <p>Pilih kartu gambar di sebelah kiri, lalu cocokkan dengan kalimat Mandarin yang sesuai di sebelah kanan!</p>
         </div>
         <div id="matching-arena-container">
           <!-- Diisi otomatis oleh JavaScript -->
@@ -249,24 +291,6 @@
       </div>
     </div>
 
-  </div>
-
-  <!-- ==========================================
-       MODAL: SARANG PENETASAN TELUR DINOSAURUS
-       ========================================== -->
-  <div class="modal-overlay" id="hatchery-modal">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3>🥚 Sarang Penetasan Telur Dinosaurus</h3>
-        <button class="modal-close">✕</button>
-      </div>
-      <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 18px;">
-        Kumpulkan <strong>Tulang Dinosaurus 🦴</strong> dengan membaca cerita, berlatih guratan, dan memenangkan kuis untuk menetaskan telur dinosaurus langka!
-      </p>
-      <div class="hatchery-grid" id="hatchery-grid">
-        <!-- Diisi otomatis oleh JavaScript -->
-      </div>
-    </div>
   </div>
 
   <!-- ==========================================
@@ -282,6 +306,24 @@
         Sesuai Buku Pelajaran Cetak Resmi 《汉语》 Halaman 67 & 68. Klik ikon speaker untuk mendengarkan nama guratan dan contoh karakternya!
       </p>
       <div class="stroke-ref-body" id="stroke-ref-content">
+        <!-- Diisi otomatis oleh JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL: SARANG PENETASAN TELUR DINOSAURUS
+       ========================================== -->
+  <div class="modal-overlay" id="hatchery-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>🥚 Sarang Penetasan Telur Dinosaurus</h3>
+        <button class="modal-close">✕</button>
+      </div>
+      <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 18px;">
+        Kumpulkan <strong>Tulang Dinosaurus 🦴</strong> dengan membaca cerita, berlatih guratan, dan memenangkan kuis untuk menetaskan telur dinosaurus langka!
+      </p>
+      <div class="hatchery-grid" id="hatchery-grid">
         <!-- Diisi otomatis oleh JavaScript -->
       </div>
     </div>

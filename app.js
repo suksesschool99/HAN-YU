@@ -1,13 +1,14 @@
 // =========================================================================
-// APP CONTROLLER: Han Yu 1 - 6 (90 Pelajaran Lengkap Kurikulum Resmi)
+// APP CONTROLLER: Han Yu 1 - 6 (Buku Teks Interaktif 90 Pelajaran)
 // =========================================================================
 
 class HanYuApp {
   constructor() {
     this.currentBookId = 1;
     this.currentUnitId = 1;
-    this.currentTab = 'story'; // 'story', 'stroke', 'quiz', 'match'
+    this.currentTab = 'story'; // 'story', 'vocab', 'stroke', 'quiz', 'match'
     this.activeVocabIndex = 0;
+    this.activePageImgIndex = 0;
     this.bones = 0;
     this.hatchedDinos = ['rexy'];
     this.completedUnits = {};
@@ -33,6 +34,7 @@ class HanYuApp {
     this.showMeaning = true;
     this.isAutoPlayingStory = false;
     this.autoPlayIndex = 0;
+    this.allStoryItems = [];
 
     this.loadState();
     this.init();
@@ -88,7 +90,7 @@ class HanYuApp {
   }
 
   checkEggHatchAvailable() {
-    const allDinos = window.HANYU_DATABASE ? window.HANYU_DATABASE.dinos : [];
+    const allDinos = (window.HANYU_DATABASE && window.HANYU_DATABASE.dinos) || [];
     const canHatch = allDinos.some(d => !this.hatchedDinos.includes(d.id) && this.bones >= d.requiredBones);
     const badge = document.getElementById('hatchery-badge');
     if (badge) {
@@ -110,7 +112,7 @@ class HanYuApp {
 
   init() {
     this.renderBookSelector();
-    this.renderUnitSelector();
+    this.renderLessonSelector();
     this.renderCurrentUnitHeader();
     this.switchTab(this.currentTab);
     this.updateBonesDisplay();
@@ -185,6 +187,52 @@ class HanYuApp {
       strokeRefBtn.addEventListener('click', () => this.openStrokeRefModal());
     }
 
+    // Tombol Navigasi Bab Sebelumnya & Berikutnya
+    const btnPrev = document.getElementById('btn-prev-lesson');
+    if (btnPrev) {
+      btnPrev.addEventListener('click', () => {
+        if (this.currentUnitId > 1) {
+          this.selectUnit(this.currentUnitId - 1);
+        } else if (this.currentBookId > 1) {
+          this.currentBookId--;
+          this.currentUnitId = 15;
+          this.selectBook(this.currentBookId, 15);
+        }
+      });
+    }
+
+    const btnNext = document.getElementById('btn-next-lesson');
+    if (btnNext) {
+      btnNext.addEventListener('click', () => {
+        if (this.currentUnitId < 15) {
+          this.selectUnit(this.currentUnitId + 1);
+        } else if (this.currentBookId < 6) {
+          this.currentBookId++;
+          this.selectBook(this.currentBookId, 1);
+        }
+      });
+    }
+
+    // Dropdown Pelajaran
+    const dropdown = document.getElementById('lesson-select-dropdown');
+    if (dropdown) {
+      dropdown.addEventListener('change', (e) => {
+        const unitId = parseInt(e.target.value, 10);
+        this.selectUnit(unitId);
+      });
+    }
+
+    // Image Zoom click on textbook page
+    const imgDisplay = document.getElementById('textbook-image-display');
+    if (imgDisplay) {
+      imgDisplay.addEventListener('click', () => {
+        const unit = this.getCurrentUnit();
+        const imgs = (unit && unit.images) || [];
+        const currentSrc = imgs[this.activePageImgIndex] || imgs[0];
+        if (currentSrc) window.open(currentSrc, '_blank');
+      });
+    }
+
     // Close Modals
     document.querySelectorAll('.modal-close').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -194,7 +242,7 @@ class HanYuApp {
     });
   }
 
-  // --- SELECTOR BUKU & UNIT ---
+  // --- SELECTOR BUKU & PELAJARAN ---
 
   renderBookSelector() {
     const container = document.getElementById('book-selector-container');
@@ -202,94 +250,80 @@ class HanYuApp {
 
     const books = (window.HANYU_DATABASE && window.HANYU_DATABASE.books) || window.HANYU_BOOKS || [];
     container.innerHTML = books.map(book => {
-      const emoji = (book.mascot && book.mascot.emoji) || (book.dinoGuide && book.dinoGuide.avatar) || '🦖';
-      const grade = book.subtitle || book.grade || `Buku ${book.id}`;
+      const emoji = (book.mascot && book.mascot.emoji) || '🦖';
+      const grade = book.subtitle || `Buku ${book.id}`;
       return `
-        <button class="book-chip ${book.id === this.currentBookId ? 'active' : ''}" data-book-id="${book.id}">
-          <span class="book-dino-avatar">${emoji}</span>
-          <div class="book-info">
-            <span class="book-title">Han Yu ${book.id}</span>
-            <span class="book-grade">${grade}</span>
+        <button class="book-quick-chip ${book.id === this.currentBookId ? 'active' : ''}" data-book-id="${book.id}">
+          <span class="chip-dino">${emoji}</span>
+          <div>
+            <div class="chip-title">Han Yu ${book.id}</div>
+            <div class="chip-sub">15 Bab</div>
           </div>
         </button>
       `;
     }).join('');
 
-    container.querySelectorAll('.book-chip').forEach(chip => {
+    container.querySelectorAll('.book-quick-chip').forEach(chip => {
       chip.addEventListener('click', (e) => {
         const bookId = parseInt(e.currentTarget.dataset.bookId, 10);
-        this.selectBook(bookId);
+        this.selectBook(bookId, 1);
       });
     });
   }
 
-  selectBook(bookId) {
+  selectBook(bookId, unitId = 1) {
     if (window.dinoAudio) window.dinoAudio.playTap();
     this.currentBookId = bookId;
-    this.currentUnitId = 1;
+    this.currentUnitId = unitId;
     this.activeVocabIndex = 0;
+    this.activePageImgIndex = 0;
     this.saveState();
     this.renderBookSelector();
-    this.renderUnitSelector();
+    this.renderLessonSelector();
     this.renderCurrentUnitHeader();
     this.reloadCurrentTab();
   }
 
-  renderUnitSelector() {
-    const container = document.getElementById('unit-selector-container');
-    if (!container) return;
-
+  renderLessonSelector() {
+    const dropdown = document.getElementById('lesson-select-dropdown');
+    const indicator = document.getElementById('current-lesson-indicator');
     const book = this.getCurrentBook();
     if (!book || !book.units) return;
 
-    // Kelompokkan 15 Pelajaran ke dalam 3 Unit Resmi (Unit 1: 1-5, Unit 2: 6-10, Unit 3: 11-15)
-    let html = '';
-    const unitGroups = [
-      { name: 'Unit 1 (第一单元: Bab 1 - 5)', start: 1, end: 5 },
-      { name: 'Unit 2 (第二单元: Bab 6 - 10)', start: 6, end: 10 },
-      { name: 'Unit 3 (第三单元: Bab 11 - 15)', start: 11, end: 15 }
-    ];
+    if (dropdown) {
+      let optHtml = '';
+      const unitGroups = [
+        { name: 'Unit 1 (第一单元: Bab 1 - 5)', start: 1, end: 5 },
+        { name: 'Unit 2 (第二单元: Bab 6 - 10)', start: 6, end: 10 },
+        { name: 'Unit 3 (第三单元: Bab 11 - 15)', start: 11, end: 15 }
+      ];
 
-    unitGroups.forEach(g => {
-      const groupUnits = book.units.filter(u => u.id >= g.start && u.id <= g.end);
-      if (groupUnits.length > 0) {
-        html += `
-          <div class="unit-group-section">
-            <div class="unit-group-header">🌿 ${g.name}</div>
-            <div class="unit-group-chips">
-              ${groupUnits.map(unit => {
-                const isCompleted = this.completedUnits[`${book.id}_${unit.id}`];
-                const cleanTitle = unit.title.split('：')[1] || unit.title;
-                return `
-                  <button class="unit-chip ${unit.id === this.currentUnitId ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-unit-id="${unit.id}">
-                    <span class="unit-num">Pelajaran ${unit.id}</span>
-                    <span class="unit-name">${cleanTitle}</span>
-                    ${isCompleted ? '<span class="unit-star">⭐</span>' : ''}
-                  </button>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        `;
-      }
-    });
-
-    container.innerHTML = html;
-
-    container.querySelectorAll('.unit-chip').forEach(chip => {
-      chip.addEventListener('click', (e) => {
-        const unitId = parseInt(e.currentTarget.dataset.unitId, 10);
-        this.selectUnit(unitId);
+      unitGroups.forEach(g => {
+        const groupUnits = book.units.filter(u => u.id >= g.start && u.id <= g.end);
+        if (groupUnits.length > 0) {
+          optHtml += `<optgroup label="${g.name}">`;
+          groupUnits.forEach(u => {
+            const isCompleted = this.completedUnits[`${book.id}_${u.id}`] ? ' ⭐' : '';
+            optHtml += `<option value="${u.id}" ${u.id === this.currentUnitId ? 'selected' : ''}>Pelajaran ${u.id}: ${u.title} (${u.meaning})${isCompleted}</option>`;
+          });
+          optHtml += `</optgroup>`;
+        }
       });
-    });
+      dropdown.innerHTML = optHtml;
+    }
+
+    if (indicator) {
+      indicator.textContent = `Buku ${this.currentBookId} • Bab ${this.currentUnitId} / 15`;
+    }
   }
 
   selectUnit(unitId) {
     if (window.dinoAudio) window.dinoAudio.playTap();
     this.currentUnitId = unitId;
     this.activeVocabIndex = 0;
+    this.activePageImgIndex = 0;
     this.saveState();
-    this.renderUnitSelector();
+    this.renderLessonSelector();
     this.renderCurrentUnitHeader();
     this.reloadCurrentTab();
   }
@@ -298,6 +332,9 @@ class HanYuApp {
     const unit = this.getCurrentUnit();
     const book = this.getCurrentBook();
     if (!unit || !book) return;
+
+    const groupPill = document.getElementById('unit-group-pill');
+    if (groupPill) groupPill.textContent = unit.unitGroup || `Buku ${book.id}`;
 
     const titleEl = document.getElementById('unit-header-title');
     if (titleEl) titleEl.textContent = unit.title;
@@ -308,18 +345,15 @@ class HanYuApp {
     const meaningEl = document.getElementById('unit-header-meaning');
     if (meaningEl) meaningEl.textContent = unit.meaning || unit.indonesian;
 
-    const introEl = document.getElementById('unit-header-intro');
-    if (introEl) introEl.textContent = unit.intro || `Materi Resmi ${book.title} ${unit.title}`;
-
     const mascot = book.mascot || { emoji: '🦖', name: 'Rexy Dino', desc: 'Sahabat Belajarmu' };
     const guideAvatar = document.getElementById('dino-guide-avatar');
-    if (guideAvatar) guideAvatar.textContent = mascot.emoji || (book.dinoGuide && book.dinoGuide.avatar) || '🦖';
+    if (guideAvatar) guideAvatar.textContent = mascot.emoji || '🦖';
 
     const guideName = document.getElementById('dino-guide-name');
-    if (guideName) guideName.textContent = mascot.name || (book.dinoGuide && book.dinoGuide.name) || 'Dino Guru';
+    if (guideName) guideName.textContent = mascot.name || 'Dino Guru';
 
     const guideDesc = document.getElementById('dino-guide-desc');
-    if (guideDesc) guideDesc.textContent = mascot.desc || (book.dinoGuide && book.dinoGuide.desc) || 'Panduan Belajar';
+    if (guideDesc) guideDesc.textContent = mascot.desc || 'Panduan Belajar';
   }
 
   switchTab(tab) {
@@ -342,6 +376,9 @@ class HanYuApp {
       case 'story':
         this.renderStoryModule();
         break;
+      case 'vocab':
+        this.renderVocabModule();
+        break;
       case 'stroke':
         this.updateStrokeModule();
         break;
@@ -355,19 +392,46 @@ class HanYuApp {
   }
 
   // ==========================================
-  // 1. CARA BACA CERITA & KALIMAT (STORY MODULE)
+  // 1. BUKU ASLI & CERITA INTERAKTIF (STORY MODULE)
   // ==========================================
 
   renderStoryModule() {
     const container = document.getElementById('story-sentences-list');
-    if (!container) return;
-
     const unit = this.getCurrentUnit();
-    if (!unit) return;
+    if (!unit || !container) return;
 
     this.isAutoPlayingStory = false;
     const playAllBtn = document.getElementById('btn-play-all-story');
     if (playAllBtn) playAllBtn.innerHTML = `<span>▶️</span> Putar Seluruh Cerita`;
+
+    // Render Textbook Page Switcher Pills
+    const pillsContainer = document.getElementById('textbook-page-pills');
+    const mainImg = document.getElementById('main-textbook-page-img');
+    const imgs = unit.images || [];
+
+    if (pillsContainer) {
+      if (imgs.length > 1) {
+        pillsContainer.innerHTML = imgs.map((_, idx) => `
+          <button class="viewer-page-pill ${idx === this.activePageImgIndex ? 'active' : ''}" data-idx="${idx}">
+            Hal ${idx + 1}
+          </button>
+        `).join('');
+
+        pillsContainer.querySelectorAll('.viewer-page-pill').forEach(pill => {
+          pill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.activePageImgIndex = parseInt(e.currentTarget.dataset.idx, 10);
+            this.renderStoryModule();
+          });
+        });
+      } else {
+        pillsContainer.innerHTML = '';
+      }
+    }
+
+    if (mainImg && imgs.length > 0) {
+      mainImg.src = imgs[this.activePageImgIndex] || imgs[0];
+    }
 
     // Gabungkan sentences dan story untuk playlist audio otomatis
     this.allStoryItems = [];
@@ -442,9 +506,6 @@ class HanYuApp {
         this.playSentence(idx);
       });
     });
-
-    // Render Original Book Image Viewer button
-    this.renderOriginalPageGallery();
   }
 
   generateRubyHtml(hanzi, pinyin) {
@@ -514,32 +575,46 @@ class HanYuApp {
     });
   }
 
-  renderOriginalPageGallery() {
-    const container = document.getElementById('story-page-gallery');
-    if (!container) return;
+  // ==========================================
+  // 2. KOSAKATA BUKU (记生词)
+  // ==========================================
 
+  renderVocabModule() {
+    const container = document.getElementById('vocab-cards-list');
     const unit = this.getCurrentUnit();
-    const imgs = (unit && unit.images) || [];
+    if (!container || !unit) return;
 
-    if (imgs.length > 0) {
-      container.innerHTML = `
-        <div class="gallery-title">📖 Halaman Cetak Asli Buku Pelajaran (Buku ${this.currentBookId} - Pelajaran ${this.currentUnitId})</div>
-        <div class="gallery-row pdf-page-row">
-          ${imgs.map((imgPath, idx) => `
-            <div class="gallery-item pdf-page-card" title="Halaman Asli ${idx + 1}">
-              <img src="${imgPath}" alt="Halaman ${idx + 1}" loading="lazy" onclick="window.open('${imgPath}', '_blank')" onerror="this.parentElement.style.display='none'" />
-              <span>🔍 Klik Buka Halaman Asli ${idx + 1}</span>
-            </div>
-          `).join('')}
-        </div>
-      `;
-    } else {
-      container.innerHTML = '';
+    const vocabList = unit.vocab || unit.vocabulary || [];
+
+    if (vocabList.length === 0) {
+      container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #64748b;">Belum ada kosakata tercatat untuk bab ini.</p>`;
+      return;
     }
+
+    container.innerHTML = vocabList.map((v, idx) => `
+      <div class="vocab-book-card" data-hanzi="${v.hanzi}">
+        <div class="vocab-book-left">
+          <span class="vocab-book-index">${idx + 1}</span>
+          <div>
+            <div class="vocab-book-hanzi">${v.hanzi}</div>
+            <div class="vocab-book-pinyin">${v.pinyin}</div>
+            <div class="vocab-book-meaning">${v.meaning || v.indonesian}</div>
+          </div>
+        </div>
+        <button class="vocab-book-audio-btn" title="Dengarkan Suara">🔊</button>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.vocab-book-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const hanzi = e.currentTarget.dataset.hanzi;
+        if (hanzi && window.dinoAudio) window.dinoAudio.speakMandarin(hanzi, 0.85);
+      });
+    });
   }
 
   // ==========================================
-  // 2. CARA MENULIS & GAME GURATAN (STROKE MODULE)
+  // 3. TULIS GURATAN (写汉字 & 田字格)
   // ==========================================
 
   updateStrokeModule() {
@@ -640,7 +715,7 @@ class HanYuApp {
   }
 
   // ==========================================
-  // 3. GAME MENEBAK ARTI & PINYIN (QUIZ MODULE)
+  // 4. GAME MENEBAK ARTI & PINYIN (QUIZ MODULE)
   // ==========================================
 
   startQuiz() {
@@ -715,7 +790,7 @@ class HanYuApp {
 
       this.completedUnits[`${this.currentBookId}_${this.currentUnitId}`] = true;
       this.saveState();
-      this.renderUnitSelector();
+      this.renderLessonSelector();
 
       if (window.dinoAudio) window.dinoAudio.playFanfare();
 
@@ -739,7 +814,7 @@ class HanYuApp {
           this.selectUnit(this.currentUnitId + 1);
         } else if (this.currentBookId < 6) {
           this.currentBookId++;
-          this.selectBook(this.currentBookId);
+          this.selectBook(this.currentBookId, 1);
         }
       });
       return;
@@ -821,7 +896,7 @@ class HanYuApp {
   }
 
   // ==========================================
-  // 4. GAME MENCOCOKKAN GAMBAR & KALIMAT (MATCHING MODULE)
+  // 5. GAME MENCOCOKKAN GAMBAR & KALIMAT (MATCHING MODULE)
   // ==========================================
 
   startMatchingGame() {
@@ -965,71 +1040,8 @@ class HanYuApp {
   }
 
   // ==========================================
-  // 5. SARANG PENETASAN TELUR DINOSAURUS (HATCHERY MODAL)
+  // MODAL 1: TABEL 28 GURATAN & 7 ATURAN URUTAN
   // ==========================================
-
-  openHatcheryModal() {
-    const modal = document.getElementById('hatchery-modal');
-    if (!modal) return;
-    modal.classList.add('active');
-
-    const container = document.getElementById('hatchery-grid');
-    if (!container) return;
-
-    const allDinos = (window.HANYU_DATABASE && window.HANYU_DATABASE.dinos) || [];
-
-    container.innerHTML = allDinos.map(dino => {
-      const isHatched = this.hatchedDinos.includes(dino.id);
-      const canHatch = !isHatched && this.bones >= dino.requiredBones;
-      const avatar = dino.emoji || dino.icon || '🦖';
-      const desc = dino.description || dino.desc || '';
-
-      return `
-        <div class="dino-incubator-card ${isHatched ? 'hatched' : 'locked'}">
-          <div class="incubator-icon-box">
-            ${isHatched ? `<span class="dino-hatched-avatar">${avatar}</span>` : `<span class="dino-egg-avatar">🥚</span>`}
-          </div>
-          <div class="incubator-info">
-            <h4>${dino.name}</h4>
-            <span class="dino-species">${dino.species}</span>
-            <p class="dino-desc">${desc}</p>
-            <div class="incubator-status">
-              ${isHatched ? `
-                <span class="status-badge hatched">🦖 Telah Menetas!</span>
-              ` : canHatch ? `
-                <button class="btn-hatch-egg" data-dino-id="${dino.id}">🥚 Tetaskan Sekarang!</button>
-              ` : `
-                <span class="status-badge locked">🔒 Butuh ${dino.requiredBones} Tulang (Kurang ${dino.requiredBones - this.bones})</span>
-              `}
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    container.querySelectorAll('.btn-hatch-egg').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const dinoId = e.currentTarget.dataset.dinoId;
-        this.hatchEgg(dinoId);
-      });
-    });
-  }
-
-  hatchEgg(dinoId) {
-    const dino = window.HANYU_DATABASE && window.HANYU_DATABASE.dinos.find(d => d.id === dinoId);
-    if (!dino) return;
-
-    if (window.dinoAudio) {
-      window.dinoAudio.playEggCrack();
-      setTimeout(() => window.dinoAudio.playDinoRoar(), 400);
-      setTimeout(() => window.dinoAudio.playFanfare(), 800);
-    }
-
-    this.hatchedDinos.push(dinoId);
-    this.saveState();
-    this.checkEggHatchAvailable();
-    this.openHatcheryModal();
-  }
 
   openStrokeRefModal() {
     const modal = document.getElementById('stroke-ref-modal');
@@ -1080,6 +1092,73 @@ class HanYuApp {
         if (text && window.dinoAudio) window.dinoAudio.speakMandarin(text);
       });
     });
+  }
+
+  // ==========================================
+  // MODAL 2: SARANG PENETASAN TELUR DINOSAURUS
+  // ==========================================
+
+  openHatcheryModal() {
+    const modal = document.getElementById('hatchery-modal');
+    if (!modal) return;
+    modal.classList.add('active');
+
+    const container = document.getElementById('hatchery-grid');
+    if (!container) return;
+
+    const allDinos = (window.HANYU_DATABASE && window.HANYU_DATABASE.dinos) || [];
+
+    container.innerHTML = allDinos.map(dino => {
+      const isHatched = this.hatchedDinos.includes(dino.id);
+      const canHatch = !isHatched && this.bones >= dino.requiredBones;
+      const avatar = dino.emoji || '🦖';
+      const desc = dino.description || '';
+
+      return `
+        <div class="dino-incubator-card ${isHatched ? 'hatched' : 'locked'}">
+          <div class="incubator-icon-box">
+            ${isHatched ? `<span class="dino-hatched-avatar">${avatar}</span>` : `<span class="dino-egg-avatar">🥚</span>`}
+          </div>
+          <div class="incubator-info">
+            <h4>${dino.name}</h4>
+            <span class="dino-species">${dino.species}</span>
+            <p class="dino-desc">${desc}</p>
+            <div class="incubator-status">
+              ${isHatched ? `
+                <span class="status-badge hatched">🦖 Telah Menetas!</span>
+              ` : canHatch ? `
+                <button class="btn-hatch-egg" data-dino-id="${dino.id}">🥚 Tetaskan Sekarang!</button>
+              ` : `
+                <span class="status-badge locked">🔒 Butuh ${dino.requiredBones} Tulang (Kurang ${dino.requiredBones - this.bones})</span>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    container.querySelectorAll('.btn-hatch-egg').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const dinoId = e.currentTarget.dataset.dinoId;
+        this.hatchEgg(dinoId);
+      });
+    });
+  }
+
+  hatchEgg(dinoId) {
+    const dino = window.HANYU_DATABASE && window.HANYU_DATABASE.dinos.find(d => d.id === dinoId);
+    if (!dino) return;
+
+    if (window.dinoAudio) {
+      window.dinoAudio.playEggCrack();
+      setTimeout(() => window.dinoAudio.playDinoRoar(), 400);
+      setTimeout(() => window.dinoAudio.playFanfare(), 800);
+    }
+
+    this.hatchedDinos.push(dinoId);
+    this.saveState();
+    this.checkEggHatchAvailable();
+    this.openHatcheryModal();
   }
 
   shuffleArray(array) {

@@ -181,167 +181,163 @@ body {
   border: 2px solid white;
 }
 
-/* --- BOOK SELECTOR CHIPS --- */
-.book-bar-card {
-  background: rgba(255, 255, 255, 0.92);
+/* --- 2. CONTROL NAVIGATOR BAR (BUKU & PELAJARAN) --- */
+.control-navigator-bar {
+  background: white;
   border-radius: var(--radius-lg);
-  padding: 14px 18px;
+  padding: 12px 18px;
   box-shadow: var(--shadow-md);
   margin-bottom: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid #e2e8f0;
 }
 
-.bar-header-label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--jungle-700);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.book-scroll-grid {
+.books-quick-row {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.book-chip {
+.book-quick-chip {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: var(--jungle-50);
-  border: 2px solid #a7f3d0;
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: left;
-}
-
-.book-chip:hover {
-  transform: translateY(-3px);
-  border-color: var(--jungle-500);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-}
-
-.book-chip.active {
-  background: linear-gradient(135deg, #059669, #047857);
-  color: white;
-  border-color: #34d399;
-  box-shadow: 0 6px 14px rgba(4, 120, 87, 0.35);
-  transform: translateY(-2px) scale(1.02);
-}
-
-.book-dino-avatar {
-  font-size: 1.8rem;
-}
-
-.book-title {
-  display: block;
-  font-weight: 700;
-  font-size: 0.98rem;
-}
-
-.book-grade {
-  display: block;
-  font-size: 0.72rem;
-  opacity: 0.85;
-}
-
-/* --- UNIT SELECTOR & GROUPING --- */
-.unit-scroll-row {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 4px 2px 8px 2px;
-}
-
-.unit-group-section {
-  background: white;
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  border: 1px solid #e2e8f0;
-  box-shadow: var(--shadow-sm);
-}
-
-.unit-group-header {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--jungle-800);
-  margin-bottom: 8px;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-}
-
-.unit-group-chips {
-  display: flex;
   gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
-}
-
-.unit-chip {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   background: #f8fafc;
   border: 2px solid #e2e8f0;
   border-radius: var(--radius-md);
-  padding: 8px 12px;
+  padding: 6px 10px;
   cursor: pointer;
   transition: all 0.2s;
-  min-width: 130px;
+  text-align: left;
 }
 
-.unit-chip:hover {
+.book-quick-chip:hover {
   border-color: var(--jungle-400);
   background: #f0fdf4;
   transform: translateY(-2px);
 }
 
-.unit-chip.active {
-  background: var(--amber-100);
-  border-color: var(--amber-500);
-  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25);
-  transform: translateY(-2px);
+.book-quick-chip.active {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white;
+  border-color: #34d399;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
 }
 
-.unit-num {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--jungle-700);
+.book-quick-chip .chip-dino {
+  font-size: 1.4rem;
 }
 
-.unit-name {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-dark);
+.book-quick-chip .chip-title {
+  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+
+.book-quick-chip .chip-sub {
+  font-size: 0.68rem;
+  opacity: 0.85;
+}
+
+.lesson-picker-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: var(--jungle-50);
+  border: 1px solid #a7f3d0;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+}
+
+.lesson-dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.lesson-dropdown-wrapper label {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--jungle-800);
   white-space: nowrap;
 }
 
-.unit-chip.completed .unit-num {
-  color: #059669;
+.lesson-select-dropdown {
+  flex: 1;
+  max-width: 420px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 2px solid #6ee7b7;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  background: white;
+  cursor: pointer;
+  outline: none;
 }
 
+.lesson-select-dropdown:focus {
+  border-color: var(--jungle-600);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.lesson-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-step-nav {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--jungle-800);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-step-nav:hover {
+  background: var(--jungle-500);
+  color: white;
+  border-color: var(--jungle-500);
+}
+
+.current-lesson-indicator {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--jungle-700);
+  padding: 0 4px;
+}
 
 /* --- UNIT BANNER --- */
 .unit-hero-banner {
   background: white;
   border-radius: var(--radius-lg);
-  padding: 20px 24px;
+  padding: 16px 22px;
   box-shadow: var(--shadow-md);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-left: 8px solid var(--jungle-500);
 }
+
+.unit-badge-pill {
+  display: inline-block;
+  background: var(--jungle-100);
+  color: var(--jungle-800);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+
 
 .unit-banner-left h2 {
   font-size: 1.65rem;
@@ -455,14 +451,212 @@ body {
 }
 
 /* ==========================================
-   MODULE 1: CARA BACA CERITA & KALIMAT
+   MODULE 1: BUKU ASLI & CERITA INTERAKTIF
    ========================================== */
-.story-panel {
+.textbook-interactive-container {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 20px;
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.textbook-page-viewer-column {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--jungle-800);
+}
+
+.viewer-page-pills {
+  display: flex;
+  gap: 6px;
+}
+
+.viewer-page-pill {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewer-page-pill.active {
+  background: var(--jungle-600);
+  color: white;
+  border-color: var(--jungle-600);
+}
+
+.textbook-image-display {
+  position: relative;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.textbook-image-display img {
+  max-width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+  border-radius: 4px;
+  transition: transform 0.2s;
+}
+
+.textbook-image-display:hover img {
+  transform: scale(1.02);
+}
+
+.page-zoom-hint {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.textbook-story-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================
+   MODULE 2: KOSAKATA BUKU (记生词)
+   ========================================== */
+.vocab-panel {
   background: white;
   border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: var(--shadow-lg);
 }
+
+.vocab-header-banner {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-left: 6px solid #3b82f6;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+
+.vocab-header-banner h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e40af;
+  margin-bottom: 4px;
+}
+
+.vocab-header-banner p {
+  font-size: 0.85rem;
+  color: #3b82f6;
+}
+
+.vocab-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.vocab-book-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vocab-book-card:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.vocab-book-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.vocab-book-index {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #3b82f6;
+  background: #dbeafe;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vocab-book-hanzi {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+}
+
+.vocab-book-pinyin {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.vocab-book-meaning {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.vocab-book-audio-btn {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.vocab-book-card:hover .vocab-book-audio-btn {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
 
 .story-control-bar {
   display: flex;
@@ -1518,8 +1712,22 @@ body {
 
 /* --- RESPONSIVE BREAKPOINTS --- */
 @media (max-width: 1024px) {
-  .book-scroll-grid {
+  .books-quick-row {
     grid-template-columns: repeat(3, 1fr);
+  }
+  .textbook-interactive-container {
+    grid-template-columns: 1fr;
+  }
+  .lesson-picker-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lesson-dropdown-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lesson-select-dropdown {
+    max-width: 100%;
   }
   .stroke-workbench {
     grid-template-columns: 1fr;
@@ -1533,6 +1741,7 @@ body {
     max-width: 100%;
   }
 }
+
 
 @media (max-width: 768px) {
   .tabs-navigation {

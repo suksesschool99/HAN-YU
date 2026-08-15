@@ -1,4 +1,6 @@
-// App Controller: Main Logic, Router, Game Engines & Dinosaur Hatchery
+// =========================================================================
+// APP CONTROLLER: Han Yu 1 - 6 (90 Pelajaran Lengkap Kurikulum Resmi)
+// =========================================================================
 
 class HanYuApp {
   constructor() {
@@ -19,8 +21,11 @@ class HanYuApp {
     };
     this.matchingState = {
       pairs: [],
+      imageCards: [],
+      textCards: [],
       selectedImage: null,
       selectedText: null,
+      matchedPairs: [],
       matchedCount: 0
     };
     this.ttsSpeed = 0.9;
@@ -83,7 +88,7 @@ class HanYuApp {
   }
 
   checkEggHatchAvailable() {
-    const allDinos = window.HANYU_DATABASE.dinos;
+    const allDinos = window.HANYU_DATABASE ? window.HANYU_DATABASE.dinos : [];
     const canHatch = allDinos.some(d => !this.hatchedDinos.includes(d.id) && this.bones >= d.requiredBones);
     const badge = document.getElementById('hatchery-badge');
     if (badge) {
@@ -93,11 +98,13 @@ class HanYuApp {
   }
 
   getCurrentBook() {
-    return window.HANYU_DATABASE.books.find(b => b.id === this.currentBookId) || window.HANYU_DATABASE.books[0];
+    const books = (window.HANYU_DATABASE && window.HANYU_DATABASE.books) || window.HANYU_BOOKS || [];
+    return books.find(b => b.id === this.currentBookId) || books[0];
   }
 
   getCurrentUnit() {
     const book = this.getCurrentBook();
+    if (!book || !book.units) return null;
     return book.units.find(u => u.id === this.currentUnitId) || book.units[0];
   }
 
@@ -111,9 +118,11 @@ class HanYuApp {
 
     // Inisialisasi Stroke Engine
     setTimeout(() => {
-      this.strokeEngine = new StrokeEngine('tianzige-canvas');
-      this.updateStrokeModule();
-    }, 100);
+      if (window.StrokeEngine) {
+        this.strokeEngine = new StrokeEngine('tianzige-canvas');
+        this.updateStrokeModule();
+      }
+    }, 150);
 
     this.bindGlobalEvents();
   }
@@ -170,6 +179,12 @@ class HanYuApp {
       hatcheryBtn.addEventListener('click', () => this.openHatcheryModal());
     }
 
+    // Tombol Tabel 28 Guratan Resmi
+    const strokeRefBtn = document.getElementById('btn-open-stroke-ref');
+    if (strokeRefBtn) {
+      strokeRefBtn.addEventListener('click', () => this.openStrokeRefModal());
+    }
+
     // Close Modals
     document.querySelectorAll('.modal-close').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -185,15 +200,20 @@ class HanYuApp {
     const container = document.getElementById('book-selector-container');
     if (!container) return;
 
-    container.innerHTML = window.HANYU_DATABASE.books.map(book => `
-      <button class="book-chip ${book.id === this.currentBookId ? 'active' : ''}" data-book-id="${book.id}">
-        <span class="book-dino-avatar">${book.dinoGuide.avatar}</span>
-        <div class="book-info">
-          <span class="book-title">Han Yu ${book.id}</span>
-          <span class="book-grade">${book.grade}</span>
-        </div>
-      </button>
-    `).join('');
+    const books = (window.HANYU_DATABASE && window.HANYU_DATABASE.books) || window.HANYU_BOOKS || [];
+    container.innerHTML = books.map(book => {
+      const emoji = (book.mascot && book.mascot.emoji) || (book.dinoGuide && book.dinoGuide.avatar) || '🦖';
+      const grade = book.subtitle || book.grade || `Buku ${book.id}`;
+      return `
+        <button class="book-chip ${book.id === this.currentBookId ? 'active' : ''}" data-book-id="${book.id}">
+          <span class="book-dino-avatar">${emoji}</span>
+          <div class="book-info">
+            <span class="book-title">Han Yu ${book.id}</span>
+            <span class="book-grade">${grade}</span>
+          </div>
+        </button>
+      `;
+    }).join('');
 
     container.querySelectorAll('.book-chip').forEach(chip => {
       chip.addEventListener('click', (e) => {
@@ -220,16 +240,41 @@ class HanYuApp {
     if (!container) return;
 
     const book = this.getCurrentBook();
-    container.innerHTML = book.units.map(unit => {
-      const isCompleted = this.completedUnits[`${book.id}_${unit.id}`];
-      return `
-        <button class="unit-chip ${unit.id === this.currentUnitId ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-unit-id="${unit.id}">
-          <span class="unit-num">Unit ${unit.id}</span>
-          <span class="unit-name">${unit.title.split('：')[1] || unit.title}</span>
-          ${isCompleted ? '<span class="unit-star">⭐</span>' : ''}
-        </button>
-      `;
-    }).join('');
+    if (!book || !book.units) return;
+
+    // Kelompokkan 15 Pelajaran ke dalam 3 Unit Resmi (Unit 1: 1-5, Unit 2: 6-10, Unit 3: 11-15)
+    let html = '';
+    const unitGroups = [
+      { name: 'Unit 1 (第一单元: Bab 1 - 5)', start: 1, end: 5 },
+      { name: 'Unit 2 (第二单元: Bab 6 - 10)', start: 6, end: 10 },
+      { name: 'Unit 3 (第三单元: Bab 11 - 15)', start: 11, end: 15 }
+    ];
+
+    unitGroups.forEach(g => {
+      const groupUnits = book.units.filter(u => u.id >= g.start && u.id <= g.end);
+      if (groupUnits.length > 0) {
+        html += `
+          <div class="unit-group-section">
+            <div class="unit-group-header">🌿 ${g.name}</div>
+            <div class="unit-group-chips">
+              ${groupUnits.map(unit => {
+                const isCompleted = this.completedUnits[`${book.id}_${unit.id}`];
+                const cleanTitle = unit.title.split('：')[1] || unit.title;
+                return `
+                  <button class="unit-chip ${unit.id === this.currentUnitId ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-unit-id="${unit.id}">
+                    <span class="unit-num">Pelajaran ${unit.id}</span>
+                    <span class="unit-name">${cleanTitle}</span>
+                    ${isCompleted ? '<span class="unit-star">⭐</span>' : ''}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    container.innerHTML = html;
 
     container.querySelectorAll('.unit-chip').forEach(chip => {
       chip.addEventListener('click', (e) => {
@@ -252,6 +297,7 @@ class HanYuApp {
   renderCurrentUnitHeader() {
     const unit = this.getCurrentUnit();
     const book = this.getCurrentBook();
+    if (!unit || !book) return;
 
     const titleEl = document.getElementById('unit-header-title');
     if (titleEl) titleEl.textContent = unit.title;
@@ -260,19 +306,20 @@ class HanYuApp {
     if (pinyinEl) pinyinEl.textContent = unit.pinyin;
 
     const meaningEl = document.getElementById('unit-header-meaning');
-    if (meaningEl) meaningEl.textContent = unit.meaning;
+    if (meaningEl) meaningEl.textContent = unit.meaning || unit.indonesian;
 
     const introEl = document.getElementById('unit-header-intro');
-    if (introEl) introEl.textContent = unit.intro;
+    if (introEl) introEl.textContent = unit.intro || `Materi Resmi ${book.title} ${unit.title}`;
 
+    const mascot = book.mascot || { emoji: '🦖', name: 'Rexy Dino', desc: 'Sahabat Belajarmu' };
     const guideAvatar = document.getElementById('dino-guide-avatar');
-    if (guideAvatar) guideAvatar.textContent = book.dinoGuide.avatar;
+    if (guideAvatar) guideAvatar.textContent = mascot.emoji || (book.dinoGuide && book.dinoGuide.avatar) || '🦖';
 
     const guideName = document.getElementById('dino-guide-name');
-    if (guideName) guideName.textContent = book.dinoGuide.name;
+    if (guideName) guideName.textContent = mascot.name || (book.dinoGuide && book.dinoGuide.name) || 'Dino Guru';
 
     const guideDesc = document.getElementById('dino-guide-desc');
-    if (guideDesc) guideDesc.textContent = book.dinoGuide.desc;
+    if (guideDesc) guideDesc.textContent = mascot.desc || (book.dinoGuide && book.dinoGuide.desc) || 'Panduan Belajar';
   }
 
   switchTab(tab) {
@@ -316,28 +363,78 @@ class HanYuApp {
     if (!container) return;
 
     const unit = this.getCurrentUnit();
+    if (!unit) return;
+
     this.isAutoPlayingStory = false;
     const playAllBtn = document.getElementById('btn-play-all-story');
     if (playAllBtn) playAllBtn.innerHTML = `<span>▶️</span> Putar Seluruh Cerita`;
 
-    container.innerHTML = unit.story.map((item, idx) => {
-      // Split characters for ruby pinyin annotation
-      const rubyHtml = this.generateRubyHtml(item.hanzi, item.pinyin);
-      return `
-        <div class="story-card" id="story-card-${idx}">
-          <div class="story-card-left">
-            <button class="story-audio-btn" data-index="${idx}" title="Dengarkan pelafalan">
-              🔊
-            </button>
-            <span class="story-index">${idx + 1}</span>
-          </div>
-          <div class="story-card-content">
-            <div class="sentence-mandarin">${rubyHtml}</div>
-            <div class="sentence-meaning" style="display: ${this.showMeaning ? 'block' : 'none'}">${item.indonesian}</div>
-          </div>
+    // Gabungkan sentences dan story untuk playlist audio otomatis
+    this.allStoryItems = [];
+    let html = '';
+
+    // 1. Bagian 学句子 (Belajar Kalimat Utama)
+    if (unit.sentences && unit.sentences.length > 0) {
+      const startIndex = this.allStoryItems.length;
+      unit.sentences.forEach(s => this.allStoryItems.push(s));
+      html += `
+        <div class="story-section-divider">
+          <span>📚 Bagian 1: 学句子 (Belajar Kalimat Utama)</span>
         </div>
+        ${unit.sentences.map((item, localIdx) => {
+          const globalIdx = startIndex + localIdx;
+          const rubyHtml = this.generateRubyHtml(item.hanzi, item.pinyin);
+          const meaningText = item.meaning || item.indonesian || '';
+          return `
+            <div class="story-card" id="story-card-${globalIdx}">
+              <div class="story-card-left">
+                <button class="story-audio-btn" data-index="${globalIdx}" title="Dengarkan pelafalan">
+                  🔊
+                </button>
+                <span class="story-index">${globalIdx + 1}</span>
+              </div>
+              <div class="story-card-content">
+                <div class="sentence-mandarin">${rubyHtml}</div>
+                <div class="sentence-meaning" style="display: ${this.showMeaning ? 'block' : 'none'}">${meaningText}</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
       `;
-    }).join('');
+    }
+
+    // 2. Bagian 读课文 / 说一说 (Teks Cerita & Dialog)
+    if (unit.story && unit.story.length > 0) {
+      const startIndex = this.allStoryItems.length;
+      unit.story.forEach(s => this.allStoryItems.push(s));
+      const sectionName = unit.sentences && unit.sentences.length > 0 ? "📖 Bagian 2: 读课文 / 说一说 (Teks Cerita & Dialog Lengkap)" : "📖 Teks Cerita & Dialog (读课文)";
+      html += `
+        <div class="story-section-divider">
+          <span>${sectionName}</span>
+        </div>
+        ${unit.story.map((item, localIdx) => {
+          const globalIdx = startIndex + localIdx;
+          const rubyHtml = this.generateRubyHtml(item.hanzi, item.pinyin);
+          const meaningText = item.meaning || item.indonesian || '';
+          return `
+            <div class="story-card" id="story-card-${globalIdx}">
+              <div class="story-card-left">
+                <button class="story-audio-btn" data-index="${globalIdx}" title="Dengarkan pelafalan">
+                  🔊
+                </button>
+                <span class="story-index">${globalIdx + 1}</span>
+              </div>
+              <div class="story-card-content">
+                <div class="sentence-mandarin">${rubyHtml}</div>
+                <div class="sentence-meaning" style="display: ${this.showMeaning ? 'block' : 'none'}">${meaningText}</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      `;
+    }
+
+    container.innerHTML = html;
 
     container.querySelectorAll('.story-audio-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -351,47 +448,45 @@ class HanYuApp {
   }
 
   generateRubyHtml(hanzi, pinyin) {
-    // Sederhana ruby: render pinyin di atas kalimat jika pinyin tersedia
     return `
       <div class="ruby-sentence">
-        <div class="ruby-pinyin" style="display: ${this.showPinyin ? 'block' : 'none'}">${pinyin}</div>
+        <div class="ruby-pinyin" style="display: ${this.showPinyin ? 'block' : 'none'}">${pinyin || ''}</div>
         <div class="ruby-hanzi">${hanzi}</div>
       </div>
     `;
   }
 
   playSentence(index, onComplete = null) {
-    const unit = this.getCurrentUnit();
-    if (!unit.story[index]) return;
+    if (!this.allStoryItems || !this.allStoryItems[index]) return;
 
-    const sentence = unit.story[index];
+    const sentence = this.allStoryItems[index];
     const card = document.getElementById(`story-card-${index}`);
 
-    // Highlight visual
     document.querySelectorAll('.story-card').forEach(c => c.classList.remove('playing'));
     if (card) {
       card.classList.add('playing');
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    window.dinoAudio.speakMandarin(
-      sentence.hanzi,
-      this.ttsSpeed,
-      null,
-      () => {
-        if (card) card.classList.remove('playing');
-        if (onComplete) onComplete();
-      }
-    );
+    if (window.dinoAudio) {
+      window.dinoAudio.speakMandarin(
+        sentence.hanzi,
+        this.ttsSpeed,
+        null,
+        () => {
+          if (card) card.classList.remove('playing');
+          if (onComplete) onComplete();
+        }
+      );
+    }
   }
 
   toggleAutoPlayStory() {
-    const unit = this.getCurrentUnit();
     const btn = document.getElementById('btn-play-all-story');
 
     if (this.isAutoPlayingStory) {
       this.isAutoPlayingStory = false;
-      window.dinoAudio.stopSpeech();
+      if (window.dinoAudio) window.dinoAudio.stopSpeech();
       if (btn) btn.innerHTML = `<span>▶️</span> Putar Seluruh Cerita`;
       document.querySelectorAll('.story-card').forEach(c => c.classList.remove('playing'));
     } else {
@@ -403,19 +498,18 @@ class HanYuApp {
   }
 
   autoPlayNextSentence() {
-    const unit = this.getCurrentUnit();
-    if (!this.isAutoPlayingStory || this.autoPlayIndex >= unit.story.length) {
+    if (!this.isAutoPlayingStory || !this.allStoryItems || this.autoPlayIndex >= this.allStoryItems.length) {
       this.isAutoPlayingStory = false;
       const btn = document.getElementById('btn-play-all-story');
       if (btn) btn.innerHTML = `<span>▶️</span> Putar Seluruh Cerita`;
-      this.addBones(10); // Reward mendengarkan seluruh cerita!
+      this.addBones(10);
       return;
     }
 
     this.playSentence(this.autoPlayIndex, () => {
       this.autoPlayIndex++;
       if (this.isAutoPlayingStory) {
-        setTimeout(() => this.autoPlayNextSentence(), 400);
+        setTimeout(() => this.autoPlayNextSentence(), 450);
       }
     });
   }
@@ -425,14 +519,16 @@ class HanYuApp {
     if (!container) return;
 
     const unit = this.getCurrentUnit();
-    if (unit.matchingPairs && unit.matchingPairs.length > 0) {
+    const imgs = (unit && unit.images) || [];
+
+    if (imgs.length > 0) {
       container.innerHTML = `
-        <div class="gallery-title">🦕 Ilustrasi Asli Buku Pelajaran Han Yu</div>
-        <div class="gallery-row">
-          ${unit.matchingPairs.map(p => `
-            <div class="gallery-item" title="${p.hanzi} - ${p.meaning}">
-              <img src="${p.image}" alt="${p.hanzi}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'><rect fill=\\'%2310b981\\' width=\\'100\\' height=\\'100\\'/><text fill=\\'white\\' x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\'>🦕</text></svg>'" />
-              <span>${p.hanzi}</span>
+        <div class="gallery-title">📖 Halaman Cetak Asli Buku Pelajaran (Buku ${this.currentBookId} - Pelajaran ${this.currentUnitId})</div>
+        <div class="gallery-row pdf-page-row">
+          ${imgs.map((imgPath, idx) => `
+            <div class="gallery-item pdf-page-card" title="Halaman Asli ${idx + 1}">
+              <img src="${imgPath}" alt="Halaman ${idx + 1}" loading="lazy" onclick="window.open('${imgPath}', '_blank')" onerror="this.parentElement.style.display='none'" />
+              <span>🔍 Klik Buka Halaman Asli ${idx + 1}</span>
             </div>
           `).join('')}
         </div>
@@ -448,7 +544,9 @@ class HanYuApp {
 
   updateStrokeModule() {
     const unit = this.getCurrentUnit();
-    const vocabList = unit.vocabulary || [];
+    if (!unit) return;
+
+    const vocabList = unit.vocab || unit.vocabulary || [];
     if (vocabList.length === 0) return;
 
     if (this.activeVocabIndex >= vocabList.length) {
@@ -478,7 +576,14 @@ class HanYuApp {
 
     // Update Tianzige Canvas Character
     if (this.strokeEngine) {
-      this.strokeEngine.setVocab(vocab);
+      this.strokeEngine.setVocab({
+        hanzi: vocab.hanzi,
+        pinyin: vocab.pinyin,
+        indonesian: vocab.meaning || vocab.indonesian,
+        strokeCount: vocab.strokeCount,
+        strokeNames: vocab.strokeNames,
+        guide: vocab.guide
+      });
     }
 
     // Update Detail Info
@@ -489,13 +594,13 @@ class HanYuApp {
     if (infoPinyin) infoPinyin.textContent = vocab.pinyin;
 
     const infoMeaning = document.getElementById('stroke-detail-meaning');
-    if (infoMeaning) infoMeaning.textContent = vocab.indonesian;
+    if (infoMeaning) infoMeaning.textContent = vocab.meaning || vocab.indonesian;
 
     const infoCount = document.getElementById('stroke-detail-count');
     if (infoCount) infoCount.textContent = `${vocab.strokeCount} Guratan`;
 
     const infoNames = document.getElementById('stroke-detail-names');
-    if (infoNames) {
+    if (infoNames && vocab.strokeNames) {
       infoNames.innerHTML = vocab.strokeNames.map((name, i) => `
         <span class="stroke-step-badge"><small>${i + 1}.</small> ${name}</span>
       `).join('');
@@ -529,7 +634,7 @@ class HanYuApp {
     const btnAudio = document.getElementById('btn-stroke-audio');
     if (btnAudio) {
       btnAudio.onclick = () => {
-        window.dinoAudio.speakMandarin(vocab.hanzi, 0.85);
+        if (window.dinoAudio) window.dinoAudio.speakMandarin(vocab.hanzi, 0.85);
       };
     }
   }
@@ -540,14 +645,28 @@ class HanYuApp {
 
   startQuiz() {
     const unit = this.getCurrentUnit();
-    const rawQuizzes = unit.quizzes || [];
+    if (!unit) return;
 
-    // Jika kuis bawaan kurang, otomatis generate kuis dari vocabulary unit
-    let questions = [...rawQuizzes];
-    if (unit.vocabulary && unit.vocabulary.length > 0) {
-      unit.vocabulary.forEach(v => {
-        // Quiz Pinyin
-        const otherPinyins = unit.vocabulary.filter(x => x.hanzi !== v.hanzi).map(x => x.pinyin);
+    const rawQuizzes = unit.quizzes || [];
+    const vocabList = unit.vocab || unit.vocabulary || [];
+
+    let questions = [];
+
+    // Format raw quizzes
+    rawQuizzes.forEach(q => {
+      questions.push({
+        question: q.q,
+        options: q.options,
+        answer: q.answer,
+        explanation: q.hint || "Pilihlah jawaban yang paling tepat."
+      });
+    });
+
+    // Generate quizzes dari vocabulary jika belum cukup
+    if (vocabList.length > 0) {
+      vocabList.forEach(v => {
+        const meaning = v.meaning || v.indonesian;
+        const otherPinyins = vocabList.filter(x => x.hanzi !== v.hanzi).map(x => x.pinyin);
         const optionsPinyin = [v.pinyin, ...otherPinyins.slice(0, 3)];
         while (optionsPinyin.length < 4) optionsPinyin.push("lǎoshī", "hǎo", "dà", "zài");
         this.shuffleArray(optionsPinyin);
@@ -556,27 +675,26 @@ class HanYuApp {
           question: `Apa Pinyin yang tepat untuk karakter '<strong>${v.hanzi}</strong>'?`,
           options: optionsPinyin.slice(0, 4),
           answer: optionsPinyin.indexOf(v.pinyin),
-          explanation: `Karakter '${v.hanzi}' dibaca '${v.pinyin}' (${v.indonesian}).`
+          explanation: `Karakter '${v.hanzi}' dibaca '${v.pinyin}' (${meaning}).`
         });
 
-        // Quiz Arti
-        const otherMeanings = unit.vocabulary.filter(x => x.hanzi !== v.hanzi).map(x => x.indonesian);
-        const optionsMeaning = [v.indonesian, ...otherMeanings.slice(0, 3)];
+        const otherMeanings = vocabList.filter(x => x.hanzi !== v.hanzi).map(x => x.meaning || x.indonesian);
+        const optionsMeaning = [meaning, ...otherMeanings.slice(0, 3)];
         while (optionsMeaning.length < 4) optionsMeaning.push("Makan", "Minum", "Pergi", "Sekolah");
         this.shuffleArray(optionsMeaning);
 
         questions.push({
           question: `Apa arti Bahasa Indonesia dari '<strong>${v.hanzi}</strong>' (${v.pinyin})?`,
           options: optionsMeaning.slice(0, 4),
-          answer: optionsMeaning.indexOf(v.indonesian),
-          explanation: `'${v.hanzi}' (${v.pinyin}) artinya adalah ${v.indonesian}.`
+          answer: optionsMeaning.indexOf(meaning),
+          explanation: `'${v.hanzi}' (${v.pinyin}) artinya adalah ${meaning}.`
         });
       });
     }
 
     this.shuffleArray(questions);
     this.quizState = {
-      questions: questions.slice(0, 8), // 8 soal per sesi
+      questions: questions.slice(0, 8),
       currentIndex: 0,
       score: 0,
       streak: 0
@@ -592,11 +710,9 @@ class HanYuApp {
     const { questions, currentIndex, score, streak } = this.quizState;
 
     if (currentIndex >= questions.length) {
-      // Sesi Kuis Selesai
       const totalReward = score * 20;
       this.addBones(totalReward);
 
-      // Tandai unit selesai
       this.completedUnits[`${this.currentBookId}_${this.currentUnitId}`] = true;
       this.saveState();
       this.renderUnitSelector();
@@ -607,19 +723,19 @@ class HanYuApp {
         <div class="quiz-result-card animate-pop">
           <div class="result-dino-avatar">🦖🎉</div>
           <h3>Luar Biasa, Petualang Dinosaurus!</h3>
-          <p>Kamu menyelesaikan kuis Unit ${this.currentUnitId} dengan skor:</p>
+          <p>Kamu menyelesaikan kuis Pelajaran ${this.currentUnitId} dengan skor:</p>
           <div class="result-score-badge">${score} / ${questions.length} Benar</div>
           <div class="result-reward-badge">+${totalReward} Tulang Dino 🦴 Diperoleh!</div>
           <div class="result-actions">
             <button class="btn-dino-primary" id="btn-quiz-retry">🔄 Main Lagi</button>
-            <button class="btn-dino-secondary" id="btn-quiz-next-unit">➡️ Lanjut ke Unit Berikutnya</button>
+            <button class="btn-dino-secondary" id="btn-quiz-next-unit">➡️ Lanjut ke Pelajaran Berikutnya</button>
           </div>
         </div>
       `;
 
       document.getElementById('btn-quiz-retry')?.addEventListener('click', () => this.startQuiz());
       document.getElementById('btn-quiz-next-unit')?.addEventListener('click', () => {
-        if (this.currentUnitId < 12) {
+        if (this.currentUnitId < 15) {
           this.selectUnit(this.currentUnitId + 1);
         } else if (this.currentBookId < 6) {
           this.currentBookId++;
@@ -654,9 +770,8 @@ class HanYuApp {
     `;
 
     document.getElementById('btn-quiz-speak')?.addEventListener('click', () => {
-      // Ekstrak teks hanzi dari pertanyaan
       const match = q.question.match(/[\u4e00-\u9fa5]+/);
-      if (match) window.dinoAudio.speakMandarin(match[0]);
+      if (match && window.dinoAudio) window.dinoAudio.speakMandarin(match[0]);
     });
 
     container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
@@ -711,14 +826,13 @@ class HanYuApp {
 
   startMatchingGame() {
     const unit = this.getCurrentUnit();
-    const pairs = unit.matchingPairs && unit.matchingPairs.length >= 3 ? unit.matchingPairs : [
-      { image: "assets/hanyu1_clean/img_002.jpg", hanzi: "一 (Yī)", meaning: "Satu" },
-      { image: "assets/hanyu1_clean/img_003.jpg", hanzi: "二 (Èr)", meaning: "Dua" },
-      { image: "assets/hanyu1_clean/img_004.jpg", hanzi: "三 (Sān)", meaning: "Tiga" }
+    const pairs = (unit && (unit.matchPairs || unit.matchingPairs)) || [
+      { img: `assets/pdf_pages_hanyu${this.currentBookId}/page_06.png`, text: "你好 (Halo)" },
+      { img: `assets/pdf_pages_hanyu${this.currentBookId}/page_07.png`, text: "老师好 (Halo Guru)" }
     ];
 
-    const imageCards = pairs.map((p, idx) => ({ id: idx, image: p.image, hanzi: p.hanzi }));
-    const textCards = pairs.map((p, idx) => ({ id: idx, hanzi: p.hanzi, meaning: p.meaning, pinyin: p.pinyin }));
+    const imageCards = pairs.map((p, idx) => ({ id: idx, image: p.img || p.image, text: p.text || p.hanzi }));
+    const textCards = pairs.map((p, idx) => ({ id: idx, text: p.text || p.hanzi }));
 
     this.shuffleArray(imageCards);
     this.shuffleArray(textCards);
@@ -743,7 +857,6 @@ class HanYuApp {
     const { imageCards, textCards, matchedPairs, pairs } = this.matchingState;
 
     if (matchedPairs.length >= pairs.length) {
-      // Selesai Game Mencocokkan
       this.addBones(50);
       if (window.dinoAudio) window.dinoAudio.playFanfare();
 
@@ -751,7 +864,7 @@ class HanYuApp {
         <div class="matching-victory-card animate-pop">
           <div class="victory-icon">🦖⭐</div>
           <h3>Hebat! Semua Gambar dan Kalimat Berhasil Dicocokkan!</h3>
-          <p>Unit ${this.currentUnitId} berhasil kamu kuasai dengan sempurna.</p>
+          <p>Pelajaran ${this.currentUnitId} berhasil kamu kuasai dengan sempurna.</p>
           <div class="result-reward-badge">+50 Tulang Dino 🦴 Didapatkan!</div>
           <div class="result-actions">
             <button class="btn-dino-primary" id="btn-rematch">🔄 Mainkan Lagi</button>
@@ -765,14 +878,14 @@ class HanYuApp {
     container.innerHTML = `
       <div class="matching-board">
         <div class="matching-column image-column">
-          <h4>🖼️ Pilih Kartu Gambar</h4>
+          <h4>🖼️ Kartu Ilustrasi Buku Pelajaran</h4>
           <div class="cards-grid">
             ${imageCards.map(c => {
               const isMatched = matchedPairs.includes(c.id);
               const isSelected = this.matchingState.selectedImage === c.id;
               return `
                 <div class="match-card img-card ${isMatched ? 'matched' : ''} ${isSelected ? 'selected' : ''}" data-type="image" data-id="${c.id}">
-                  <img src="${c.image}" alt="${c.hanzi}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'><rect fill=\\'%2310b981\\' width=\\'100\\' height=\\'100\\'/><text fill=\\'white\\' x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\'>🦖</text></svg>'" />
+                  <img src="${c.image}" alt="Gambar Pelajaran" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'><rect fill=\\'%2310b981\\' width=\\'100\\' height=\\'100\\'/><text fill=\\'white\\' x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\'>🦖</text></svg>'" />
                   ${isMatched ? '<span class="match-check">✅ Selesai</span>' : ''}
                 </div>
               `;
@@ -785,16 +898,14 @@ class HanYuApp {
         </div>
 
         <div class="matching-column text-column">
-          <h4>📜 Cocokkan Kalimat / Karakter</h4>
+          <h4>📜 Cocokkan Kalimat Mandarin</h4>
           <div class="cards-grid">
             ${textCards.map(c => {
               const isMatched = matchedPairs.includes(c.id);
               const isSelected = this.matchingState.selectedText === c.id;
               return `
                 <div class="match-card text-card ${isMatched ? 'matched' : ''} ${isSelected ? 'selected' : ''}" data-type="text" data-id="${c.id}">
-                  <div class="match-text-hanzi">${c.hanzi}</div>
-                  <div class="match-text-pinyin">${c.pinyin || ''}</div>
-                  <div class="match-text-meaning">${c.meaning || ''}</div>
+                  <div class="match-text-content">${c.text}</div>
                   ${isMatched ? '<span class="match-check">✅</span>' : ''}
                 </div>
               `;
@@ -822,19 +933,17 @@ class HanYuApp {
       this.matchingState.selectedImage = id;
     } else {
       this.matchingState.selectedText = id;
-      // Ucapkan suara kalimat Mandarin yang diklik
       const pair = this.matchingState.pairs[id];
       if (pair && window.dinoAudio) {
-        window.dinoAudio.speakMandarin(pair.hanzi);
+        const cleanHanzi = (pair.text || pair.hanzi || '').split('(')[0].trim();
+        window.dinoAudio.speakMandarin(cleanHanzi);
       }
     }
 
     this.renderMatchingBoard();
 
-    // Jika keduanya sudah dipilih, periksa kecocokan
     if (this.matchingState.selectedImage !== null && this.matchingState.selectedText !== null) {
       if (this.matchingState.selectedImage === this.matchingState.selectedText) {
-        // Cocok!
         this.matchingState.matchedPairs.push(this.matchingState.selectedImage);
         this.matchingState.selectedImage = null;
         this.matchingState.selectedText = null;
@@ -845,7 +954,6 @@ class HanYuApp {
         }
         setTimeout(() => this.renderMatchingBoard(), 300);
       } else {
-        // Salah
         if (window.dinoAudio) window.dinoAudio.playWrong();
         setTimeout(() => {
           this.matchingState.selectedImage = null;
@@ -868,21 +976,23 @@ class HanYuApp {
     const container = document.getElementById('hatchery-grid');
     if (!container) return;
 
-    const allDinos = window.HANYU_DATABASE.dinos;
+    const allDinos = (window.HANYU_DATABASE && window.HANYU_DATABASE.dinos) || [];
 
     container.innerHTML = allDinos.map(dino => {
       const isHatched = this.hatchedDinos.includes(dino.id);
       const canHatch = !isHatched && this.bones >= dino.requiredBones;
+      const avatar = dino.emoji || dino.icon || '🦖';
+      const desc = dino.description || dino.desc || '';
 
       return `
         <div class="dino-incubator-card ${isHatched ? 'hatched' : 'locked'}">
           <div class="incubator-icon-box">
-            ${isHatched ? `<span class="dino-hatched-avatar">${dino.icon}</span>` : `<span class="dino-egg-avatar">🥚</span>`}
+            ${isHatched ? `<span class="dino-hatched-avatar">${avatar}</span>` : `<span class="dino-egg-avatar">🥚</span>`}
           </div>
           <div class="incubator-info">
             <h4>${dino.name}</h4>
             <span class="dino-species">${dino.species}</span>
-            <p class="dino-desc">${dino.desc}</p>
+            <p class="dino-desc">${desc}</p>
             <div class="incubator-status">
               ${isHatched ? `
                 <span class="status-badge hatched">🦖 Telah Menetas!</span>
@@ -906,7 +1016,7 @@ class HanYuApp {
   }
 
   hatchEgg(dinoId) {
-    const dino = window.HANYU_DATABASE.dinos.find(d => d.id === dinoId);
+    const dino = window.HANYU_DATABASE && window.HANYU_DATABASE.dinos.find(d => d.id === dinoId);
     if (!dino) return;
 
     if (window.dinoAudio) {
@@ -919,6 +1029,57 @@ class HanYuApp {
     this.saveState();
     this.checkEggHatchAvailable();
     this.openHatcheryModal();
+  }
+
+  openStrokeRefModal() {
+    const modal = document.getElementById('stroke-ref-modal');
+    if (!modal) return;
+    modal.classList.add('active');
+
+    const container = document.getElementById('stroke-ref-content');
+    if (!container) return;
+
+    const strokes = (window.HANYU_DATABASE && window.HANYU_DATABASE.strokeReference) || [];
+    const rules = (window.HANYU_DATABASE && window.HANYU_DATABASE.strokeRules) || [];
+
+    container.innerHTML = `
+      <div class="stroke-ref-section-title">
+        <span>✍️</span> 1. Tabel 28 Nama Guratan Hanzi Resmi (汉字笔画名称表)
+      </div>
+      <div class="stroke-ref-grid">
+        ${strokes.map((s, idx) => `
+          <div class="stroke-ref-card" title="${s.desc}">
+            <div class="stroke-ref-symbol">${s.stroke}</div>
+            <div class="stroke-ref-info">
+              <div class="stroke-ref-name">${s.name}</div>
+              <div class="stroke-ref-example">Contoh: <strong>${s.example}</strong> • ${s.desc}</div>
+            </div>
+            <button class="stroke-ref-audio-btn" data-audio="${s.example}" title="Dengarkan Contoh Huruf">🔊</button>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="stroke-ref-section-title">
+        <span>📐</span> 2. Tujuh Aturan Dasar Urutan Menulis Hanzi (汉字笔顺基本规则)
+      </div>
+      <div class="stroke-rules-grid">
+        ${rules.map((r, idx) => `
+          <div class="stroke-rule-card">
+            <div class="stroke-rule-title">${idx + 1}. ${r.rule}</div>
+            <div class="stroke-rule-examples">
+              ${r.examples.map(ex => `<span>👉 ${ex}</span>`).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    container.querySelectorAll('.stroke-ref-audio-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const text = e.currentTarget.dataset.audio;
+        if (text && window.dinoAudio) window.dinoAudio.speakMandarin(text);
+      });
+    });
   }
 
   shuffleArray(array) {
